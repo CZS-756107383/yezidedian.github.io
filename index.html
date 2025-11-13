@@ -119,6 +119,15 @@
             background-color: #e6e6e6;
         }
         
+        .button-danger {
+            background-color: #ff4d4f;
+            color: white;
+        }
+        
+        .button-danger:hover {
+            background-color: #ff7875;
+        }
+        
         .table-container {
             max-height: 400px;
             overflow-y: auto;
@@ -218,6 +227,37 @@
         .filter-group input,
         .filter-group select {
             flex: 1;
+        }
+        
+        .delete-btn {
+            background-color: #ff4d4f;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .delete-btn:hover {
+            background-color: #ff7875;
+        }
+        
+        .delete-section {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #fff1f0;
+            border-radius: 4px;
+            border-left: 4px solid #ff4d4f;
+        }
+        
+        .delete-section h4 {
+            color: #ff4d4f;
+            margin-bottom: 10px;
+        }
+        
+        .delete-section .form-group {
+            margin-bottom: 10px;
         }
         
         /* 响应式调整 */
@@ -330,6 +370,7 @@
                 </select>
             </div>
             <button onclick="window.filterStockRecords()">筛选记录</button>
+            
             <div class="table-container">
                 <table id="recordsTable">
                     <thead>
@@ -340,10 +381,29 @@
                             <th>数量</th>
                             <th>单价</th>
                             <th>总价</th>
+                            <th>操作</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
                 </table>
+            </div>
+            
+            <!-- 删除指定日期的出入库记录 -->
+            <div class="delete-section">
+                <h4>删除指定日期的记录</h4>
+                <div class="form-group">
+                    <label for="deleteStockRecordDate">选择日期</label>
+                    <input type="date" id="deleteStockRecordDate">
+                </div>
+                <div class="form-group">
+                    <label for="deleteStockRecordType">记录类型</label>
+                    <select id="deleteStockRecordType">
+                        <option value="">全部类型</option>
+                        <option value="in">仅入库</option>
+                        <option value="out">仅出库</option>
+                    </select>
+                </div>
+                <button class="button-danger" onclick="window.deleteStockRecordsByDate()">删除选定日期记录</button>
             </div>
         </div>
         
@@ -379,6 +439,7 @@
                 <input type="date" id="salesFilterDate" placeholder="选择日期">
             </div>
             <button onclick="window.filterSalesRecords()">筛选记录</button>
+            
             <div class="table-container">
                 <table id="salesRecordsTable">
                     <thead>
@@ -388,11 +449,13 @@
                             <th>销售数量</th>
                             <th>销售单价</th>
                             <th>销售收入</th>
+                            <th>操作</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
                 </table>
             </div>
+            
             <div class="summary-info" id="salesSummary">
                 <div class="summary-item">
                     <span>销售总计：</span>
@@ -402,6 +465,16 @@
                     <span>售出数量：</span>
                     <span id="totalQuantity">0</span>
                 </div>
+            </div>
+            
+            <!-- 删除指定日期的销售记录 -->
+            <div class="delete-section">
+                <h4>删除指定日期的销售记录</h4>
+                <div class="form-group">
+                    <label for="deleteSalesRecordDate">选择日期</label>
+                    <input type="date" id="deleteSalesRecordDate">
+                </div>
+                <button class="button-danger" onclick="window.deleteSalesRecordsByDate()">删除选定日期记录</button>
             </div>
         </div>
         
@@ -555,7 +628,7 @@
             const name = document.getElementById('stockInName').value.trim();
             const quantity = parseInt(document.getElementById('stockInQuantity').value);
             const price = parseFloat(document.getElementById('stockInPrice').value);
-            const date = document.getElementById('stockInDate').value;
+            let date = document.getElementById('stockInDate').value;
             
             // 验证输入
             let isValid = true;
@@ -631,7 +704,7 @@
             
             const name = document.getElementById('stockOutName').value;
             const quantity = parseInt(document.getElementById('stockOutQuantity').value);
-            const date = document.getElementById('stockOutDate').value;
+            let date = document.getElementById('stockOutDate').value;
             
             // 验证输入
             let isValid = true;
@@ -698,7 +771,7 @@
             const name = document.getElementById('salesName').value;
             const quantity = parseInt(document.getElementById('salesQuantity').value);
             const price = parseFloat(document.getElementById('salesPrice').value);
-            const date = document.getElementById('salesDate').value;
+            let date = document.getElementById('salesDate').value;
             
             // 验证输入
             let isValid = true;
@@ -746,7 +819,8 @@
                 price: item.avgPrice,
                 total: quantity * item.avgPrice,
                 id: Date.now().toString(),
-                isSale: true
+                isSale: true,
+                saleId: Date.now().toString() // 添加销售ID关联
             });
             
             // 添加销售记录
@@ -756,7 +830,8 @@
                 quantity,
                 price,
                 total: quantity * price,
-                id: Date.now().toString()
+                id: Date.now().toString(),
+                recordId: Date.now().toString() // 添加记录ID关联
             });
             
             // 保存数据
@@ -818,6 +893,16 @@
                 row.insertCell(4).textContent = `¥${record.price.toFixed(2)}`;
                 row.insertCell(5).textContent = `¥${record.total.toFixed(2)}`;
                 
+                // 添加删除按钮
+                const actionCell = row.insertCell(6);
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.textContent = '删除';
+                deleteBtn.onclick = function() {
+                    window.deleteStockRecord(record.id, record);
+                };
+                actionCell.appendChild(deleteBtn);
+                
                 // 高亮销售记录
                 if (record.isSale) {
                     row.style.backgroundColor = '#f0f9ff';
@@ -827,7 +912,7 @@
             if (displayRecords.length === 0) {
                 const row = tbody.insertRow();
                 const cell = row.insertCell(0);
-                cell.colSpan = 6;
+                cell.colSpan = 7;
                 cell.textContent = '暂无出入库记录';
                 cell.style.textAlign = 'center';
                 cell.style.padding = '20px';
@@ -853,6 +938,16 @@
                 row.insertCell(3).textContent = `¥${record.price.toFixed(2)}`;
                 row.insertCell(4).textContent = `¥${record.total.toFixed(2)}`;
                 
+                // 添加删除按钮
+                const actionCell = row.insertCell(5);
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.textContent = '删除';
+                deleteBtn.onclick = function() {
+                    window.deleteSalesRecord(record.id, record);
+                };
+                actionCell.appendChild(deleteBtn);
+                
                 totalSales += record.total;
                 totalQuantity += record.quantity;
             });
@@ -864,7 +959,7 @@
             if (displayRecords.length === 0) {
                 const row = tbody.insertRow();
                 const cell = row.insertCell(0);
-                cell.colSpan = 5;
+                cell.colSpan = 6;
                 cell.textContent = '暂无销售记录';
                 cell.style.textAlign = 'center';
                 cell.style.padding = '20px';
@@ -1014,6 +1109,289 @@
                 window.switchTab('dataSync');
                 document.getElementById('importMessage').textContent = '检测到导入请求，请选择数据文件进行导入';
             }
+        };
+        
+        // 删除单条出入库记录
+        window.deleteStockRecord = function(recordId, record) {
+            if (confirm('确定要删除这条记录吗？删除后相关库存将恢复。')) {
+                // 从记录数组中删除
+                window.inventoryData.records = window.inventoryData.records.filter(r => r.id !== recordId);
+                
+                // 如果是销售相关的出库记录，同时删除对应的销售记录
+                if (record.isSale && record.saleId) {
+                    window.inventoryData.salesRecords = window.inventoryData.salesRecords.filter(
+                        sale => sale.recordId !== record.saleId
+                    );
+                }
+                
+                // 恢复库存
+                if (!window.inventoryData.stock[record.name]) {
+                    window.inventoryData.stock[record.name] = {
+                        quantity: 0,
+                        totalCost: 0,
+                        avgPrice: 0
+                    };
+                }
+                
+                const item = window.inventoryData.stock[record.name];
+                if (record.type === 'in') {
+                    // 对于入库记录，减去入库数量
+                    if (item.quantity >= record.quantity) {
+                        item.quantity -= record.quantity;
+                        item.totalCost -= record.total;
+                        if (item.quantity > 0) {
+                            item.avgPrice = item.totalCost / item.quantity;
+                        } else {
+                            item.avgPrice = 0;
+                        }
+                    }
+                } else if (record.type === 'out') {
+                    // 对于出库记录，增加库存数量
+                    item.quantity += record.quantity;
+                    item.totalCost += record.total;
+                    item.avgPrice = item.totalCost / item.quantity;
+                }
+                
+                // 如果库存为0，删除该物品
+                if (item.quantity === 0) {
+                    delete window.inventoryData.stock[record.name];
+                }
+                
+                // 保存数据并更新界面
+                window.saveData();
+                window.updateStockTable();
+                window.updateStockRecords();
+                window.updateSalesRecords();
+                window.updateItemDropdowns();
+                
+                window.showSuccessMessage('记录删除成功');
+            }
+        };
+        
+        // 删除单条销售记录
+        window.deleteSalesRecord = function(recordId, record) {
+            if (confirm('确定要删除这条销售记录吗？删除后相关库存将恢复。')) {
+                // 从销售记录中删除
+                window.inventoryData.salesRecords = window.inventoryData.salesRecords.filter(
+                    sale => sale.id !== recordId
+                );
+                
+                // 同时删除对应的出库记录
+                window.inventoryData.records = window.inventoryData.records.filter(
+                    r => !(r.isSale && r.saleId === record.recordId)
+                );
+                
+                // 恢复库存
+                if (!window.inventoryData.stock[record.name]) {
+                    window.inventoryData.stock[record.name] = {
+                        quantity: 0,
+                        totalCost: 0,
+                        avgPrice: 0
+                    };
+                }
+                
+                const item = window.inventoryData.stock[record.name];
+                // 增加库存数量（使用原始入库价格计算成本）
+                const averagePurchasePrice = window.calculateAveragePurchasePrice(record.name);
+                item.quantity += record.quantity;
+                item.totalCost += record.quantity * averagePurchasePrice;
+                item.avgPrice = item.totalCost / item.quantity;
+                
+                // 保存数据并更新界面
+                window.saveData();
+                window.updateStockTable();
+                window.updateStockRecords();
+                window.updateSalesRecords();
+                window.updateItemDropdowns();
+                
+                window.showSuccessMessage('销售记录删除成功');
+            }
+        };
+        
+        // 按日期删除出入库记录
+        window.deleteStockRecordsByDate = function() {
+            const deleteDate = document.getElementById('deleteStockRecordDate').value;
+            const deleteType = document.getElementById('deleteStockRecordType').value;
+            
+            if (!deleteDate) {
+                alert('请选择要删除的日期');
+                return;
+            }
+            
+            // 找出要删除的记录
+            const recordsToDelete = window.inventoryData.records.filter(record => {
+                let matchDate = record.date === deleteDate;
+                let matchType = deleteType ? record.type === deleteType : true;
+                return matchDate && matchType;
+            });
+            
+            if (recordsToDelete.length === 0) {
+                alert('所选日期没有符合条件的记录');
+                return;
+            }
+            
+            if (confirm(`确定要删除 ${deleteDate} 的 ${deleteType ? (deleteType === 'in' ? '入库' : '出库') : '所有'} 记录吗？删除后相关库存将恢复。`)) {
+                // 恢复所有要删除记录的库存
+                recordsToDelete.forEach(record => {
+                    if (!window.inventoryData.stock[record.name]) {
+                        window.inventoryData.stock[record.name] = {
+                            quantity: 0,
+                            totalCost: 0,
+                            avgPrice: 0
+                        };
+                    }
+                    
+                    const item = window.inventoryData.stock[record.name];
+                    if (record.type === 'in') {
+                        // 对于入库记录，减去入库数量
+                        if (item.quantity >= record.quantity) {
+                            item.quantity -= record.quantity;
+                            item.totalCost -= record.total;
+                        }
+                    } else if (record.type === 'out') {
+                        // 对于出库记录，增加库存数量
+                        item.quantity += record.quantity;
+                        item.totalCost += record.total;
+                    }
+                    
+                    // 如果是销售相关的记录，同时删除对应的销售记录
+                    if (record.isSale && record.saleId) {
+                        window.inventoryData.salesRecords = window.inventoryData.salesRecords.filter(
+                            sale => sale.recordId !== record.saleId
+                        );
+                    }
+                });
+                
+                // 删除记录
+                window.inventoryData.records = window.inventoryData.records.filter(record => {
+                    let matchDate = record.date === deleteDate;
+                    let matchType = deleteType ? record.type === deleteType : true;
+                    return !(matchDate && matchType);
+                });
+                
+                // 更新平均价格并清理空库存
+                Object.keys(window.inventoryData.stock).forEach(name => {
+                    const item = window.inventoryData.stock[name];
+                    if (item.quantity > 0) {
+                        item.avgPrice = item.totalCost / item.quantity;
+                    } else {
+                        delete window.inventoryData.stock[name];
+                    }
+                });
+                
+                // 保存数据并更新界面
+                window.saveData();
+                window.updateStockTable();
+                window.updateStockRecords();
+                window.updateSalesRecords();
+                window.updateItemDropdowns();
+                
+                // 清空删除表单
+                document.getElementById('deleteStockRecordDate').value = '';
+                document.getElementById('deleteStockRecordType').value = '';
+                
+                window.showSuccessMessage(`成功删除 ${recordsToDelete.length} 条记录`);
+            }
+        };
+        
+        // 按日期删除销售记录
+        window.deleteSalesRecordsByDate = function() {
+            const deleteDate = document.getElementById('deleteSalesRecordDate').value;
+            
+            if (!deleteDate) {
+                alert('请选择要删除的日期');
+                return;
+            }
+            
+            // 找出要删除的销售记录
+            const salesToDelete = window.inventoryData.salesRecords.filter(
+                sale => sale.date === deleteDate
+            );
+            
+            if (salesToDelete.length === 0) {
+                alert('所选日期没有销售记录');
+                return;
+            }
+            
+            if (confirm(`确定要删除 ${deleteDate} 的所有销售记录吗？删除后相关库存将恢复。`)) {
+                // 记录所有需要恢复库存的物品及数量
+                const inventoryToRestore = {};
+                
+                // 标记要删除的出库记录ID
+                const recordIdsToDelete = new Set();
+                
+                salesToDelete.forEach(sale => {
+                    // 记录要恢复的库存
+                    if (!inventoryToRestore[sale.name]) {
+                        inventoryToRestore[sale.name] = 0;
+                    }
+                    inventoryToRestore[sale.name] += sale.quantity;
+                    
+                    // 记录要删除的出库记录ID
+                    recordIdsToDelete.add(sale.recordId);
+                });
+                
+                // 删除销售记录
+                window.inventoryData.salesRecords = window.inventoryData.salesRecords.filter(
+                    sale => sale.date !== deleteDate
+                );
+                
+                // 删除对应的出库记录
+                window.inventoryData.records = window.inventoryData.records.filter(
+                    record => !recordIdsToDelete.has(record.saleId)
+                );
+                
+                // 恢复库存
+                Object.keys(inventoryToRestore).forEach(name => {
+                    if (!window.inventoryData.stock[name]) {
+                        window.inventoryData.stock[name] = {
+                            quantity: 0,
+                            totalCost: 0,
+                            avgPrice: 0
+                        };
+                    }
+                    
+                    const item = window.inventoryData.stock[name];
+                    const quantityToRestore = inventoryToRestore[name];
+                    const averagePurchasePrice = window.calculateAveragePurchasePrice(name);
+                    
+                    item.quantity += quantityToRestore;
+                    item.totalCost += quantityToRestore * averagePurchasePrice;
+                    item.avgPrice = item.totalCost / item.quantity;
+                });
+                
+                // 保存数据并更新界面
+                window.saveData();
+                window.updateStockTable();
+                window.updateStockRecords();
+                window.updateSalesRecords();
+                window.updateItemDropdowns();
+                
+                // 清空删除表单
+                document.getElementById('deleteSalesRecordDate').value = '';
+                
+                window.showSuccessMessage(`成功删除 ${salesToDelete.length} 条销售记录`);
+            }
+        };
+        
+        // 计算物品的平均采购价格（用于恢复销售记录时）
+        window.calculateAveragePurchasePrice = function(itemName) {
+            // 查找所有该物品的入库记录（不包括已删除的）
+            const inRecords = window.inventoryData.records.filter(
+                r => r.name === itemName && r.type === 'in'
+            );
+            
+            if (inRecords.length === 0) return 0;
+            
+            let totalCost = 0;
+            let totalQuantity = 0;
+            
+            inRecords.forEach(record => {
+                totalCost += record.total;
+                totalQuantity += record.quantity;
+            });
+            
+            return totalQuantity > 0 ? totalCost / totalQuantity : 0;
         };
         
         // 页面加载完成后初始化
