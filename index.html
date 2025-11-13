@@ -2,190 +2,232 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>库存管理系统</title>
     <style>
+        /* 基本样式 */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
         
         body {
+            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 14px;
+            color: #333;
             background-color: #f5f5f5;
-            padding: 20px;
-            max-width: 1000px;
-            margin: 0 auto;
+            line-height: 1.5;
+            padding: constant(safe-area-inset-top) 0 constant(safe-area-inset-bottom) 0;
+            padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0;
         }
         
         .container {
-            background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 15px;
+            background-color: #fff;
+            min-height: 100vh;
         }
         
         h1 {
             text-align: center;
-            color: #333;
+            font-size: 20px;
             margin-bottom: 20px;
-            font-size: 24px;
+            color: #333;
+            font-weight: 600;
         }
         
+        /* 标签切换 */
         .tabs {
             display: flex;
+            flex-wrap: wrap;
             border-bottom: 1px solid #e0e0e0;
             margin-bottom: 20px;
-            overflow-x: auto;
-            white-space: nowrap;
         }
         
         .tab {
-            padding: 12px 20px;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
+            flex: 1;
+            min-width: 25%;
+            text-align: center;
+            padding: 12px 0;
             color: #666;
-            font-weight: 500;
-            transition: all 0.3s;
+            font-size: 15px;
+            position: relative;
+            cursor: pointer;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
         }
         
         .tab.active {
-            color: #1890ff;
-            border-bottom-color: #1890ff;
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .form-group {
-            margin-bottom: 16px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
+            color: #07c160;
             font-weight: 500;
         }
         
-        .form-group input {
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 30%;
+            width: 40%;
+            height: 2px;
+            background-color: #07c160;
+        }
+        
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #d9d9d9;
-            border-radius: 4px;
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
             font-size: 14px;
+            background-color: #fff;
+            -webkit-appearance: none;
         }
         
-        .form-group input:focus {
+        input:focus,
+        select:focus {
             outline: none;
-            border-color: #1890ff;
-            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+            border-color: #07c160;
         }
         
-        .btn {
-            padding: 10px 20px;
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #07c160;
+            color: white;
             border: none;
-            border-radius: 4px;
-            font-size: 14px;
+            border-radius: 6px;
+            font-size: 16px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s;
+            margin-top: 10px;
+            -webkit-appearance: none;
         }
         
-        .btn-primary {
-            background-color: #1890ff;
-            color: white;
+        button:active {
+            opacity: 0.8;
         }
         
-        .btn-primary:hover {
-            background-color: #40a9ff;
-        }
-        
-        .btn-success {
-            background-color: #52c41a;
-            color: white;
-        }
-        
-        .btn-success:hover {
-            background-color: #73d13d;
+        /* 表格样式 */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 15px;
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
-        }
-        
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        
-        th {
-            background-color: #fafafa;
-            font-weight: 600;
-            color: #333;
-        }
-        
-        tr:hover {
-            background-color: #fafafa;
-        }
-        
-        .error-message {
-            color: #ff4d4f;
-            font-size: 12px;
-            margin-top: 4px;
-        }
-        
-        .empty-message {
-            text-align: center;
-            color: #999;
-            padding: 40px;
             font-size: 14px;
         }
         
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+            white-space: nowrap;
+        }
+        
+        th {
+            background-color: #f8f8f8;
+            font-weight: 500;
+            color: #666;
+        }
+        
+        /* 筛选部分 */
         .filter-section {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f8f8f8;
+            border-radius: 6px;
         }
         
-        .filter-group {
+        .filter-row {
             display: flex;
-            align-items: center;
-            gap: 8px;
+            gap: 10px;
+            margin-bottom: 10px;
         }
         
-        .stock-in { color: #52c41a; }
-        .stock-out { color: #ff4d4f; }
+        .filter-row > div {
+            flex: 1;
+        }
         
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            
-            .container {
-                padding: 15px;
-            }
-            
-            .filter-section {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .filter-group {
-                flex-direction: column;
-                align-items: stretch;
-            }
+        /* 消息提示 */
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            display: none;
+        }
+        
+        .message.success {
+            background-color: #e6f7e9;
+            color: #13ce66;
+            display: block;
+        }
+        
+        .message.error {
+            background-color: #fce8e6;
+            color: #f5222d;
+            display: block;
+        }
+        
+        /* 错误提示 */
+        .error-message {
+            color: #f5222d;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            padding: 15px 0;
+            color: #999;
+            font-size: 12px;
+        }
+        
+        /* 等待提示 */
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            display: none;
+        }
+        
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
         }
     </style>
 </head>
@@ -194,396 +236,831 @@
         <h1>库存管理系统</h1>
         
         <div class="tabs">
-            <div class="tab active" onclick="window.switchTab('stockIn')">入库</div>
-            <div class="tab" onclick="window.switchTab('stockOut')">出库</div>
+            <div class="tab active" onclick="window.switchTab('stockIn')">物品入库</div>
+            <div class="tab" onclick="window.switchTab('stockOut')">物品出库</div>
             <div class="tab" onclick="window.switchTab('currentStock')">当前库存</div>
             <div class="tab" onclick="window.switchTab('records')">出入库记录</div>
+            <div class="tab" onclick="window.switchTab('sales')">物品售卖</div>
+            <div class="tab" onclick="window.switchTab('salesRecords')">售卖记录</div>
         </div>
         
-        <!-- 入库表单 -->
-        <div id="stockIn" class="tab-content active">
+        <!-- 消息提示 -->
+        <div id="message" class="message"></div>
+        
+        <!-- 物品入库 -->
+        <div id="stockInPanel" class="panel">
             <div class="form-group">
-                <label for="in-name">物品名称</label>
-                <input type="text" id="in-name" placeholder="请输入物品名称">
-                <div id="in-name-error" class="error-message"></div>
+                <label for="inName">物品名称</label>
+                <input type="text" id="inName" placeholder="请输入物品名称">
+                <div id="inNameError" class="error-message"></div>
             </div>
             <div class="form-group">
-                <label for="in-quantity">数量</label>
-                <input type="number" id="in-quantity" placeholder="请输入数量" min="1">
-                <div id="in-quantity-error" class="error-message"></div>
+                <label for="inQuantity">入库数量</label>
+                <input type="number" id="inQuantity" min="1" placeholder="请输入入库数量">
+                <div id="inQuantityError" class="error-message"></div>
             </div>
             <div class="form-group">
-                <label for="in-price">单价</label>
-                <input type="number" id="in-price" placeholder="请输入单价" min="0" step="0.01">
-                <div id="in-price-error" class="error-message"></div>
+                <label for="inPrice">物品单价</label>
+                <input type="number" id="inPrice" min="0" step="0.01" placeholder="请输入物品单价">
+                <div id="inPriceError" class="error-message"></div>
             </div>
-            <button class="btn btn-primary" onclick="window.handleStockIn()">确认入库</button>
+            <button onclick="window.handleStockIn()">确认入库</button>
         </div>
         
-        <!-- 出库表单 -->
-        <div id="stockOut" class="tab-content">
+        <!-- 物品出库 -->
+        <div id="stockOutPanel" class="panel" style="display: none;">
             <div class="form-group">
-                <label for="out-name">物品名称</label>
-                <input type="text" id="out-name" placeholder="请输入物品名称">
-                <div id="out-name-error" class="error-message"></div>
+                <label for="outName">物品名称</label>
+                <input type="text" id="outName" placeholder="请输入物品名称">
+                <div id="outNameError" class="error-message"></div>
             </div>
             <div class="form-group">
-                <label for="out-quantity">数量</label>
-                <input type="number" id="out-quantity" placeholder="请输入数量" min="1">
-                <div id="out-quantity-error" class="error-message"></div>
+                <label for="outQuantity">出库数量</label>
+                <input type="number" id="outQuantity" min="1" placeholder="请输入出库数量">
+                <div id="outQuantityError" class="error-message"></div>
             </div>
-            <button class="btn btn-success" onclick="window.handleStockOut()">确认出库</button>
+            <button onclick="window.handleStockOut()">确认出库</button>
+        </div>
+        
+        <!-- 物品售卖 -->
+        <div id="salesPanel" class="panel" style="display: none;">
+            <div class="form-group">
+                <label for="salesName">物品名称</label>
+                <input type="text" id="salesName" placeholder="请输入物品名称">
+                <div id="salesNameError" class="error-message"></div>
+            </div>
+            <div class="form-group">
+                <label for="salesQuantity">售卖数量</label>
+                <input type="number" id="salesQuantity" min="1" placeholder="请输入售卖数量">
+                <div id="salesQuantityError" class="error-message"></div>
+            </div>
+            <div class="form-group">
+                <label for="salesPrice">售卖单价</label>
+                <input type="number" id="salesPrice" min="0" step="0.01" placeholder="请输入售卖单价">
+                <div id="salesPriceError" class="error-message"></div>
+            </div>
+            <button onclick="window.handleSales()">确认售卖</button>
         </div>
         
         <!-- 当前库存 -->
-        <div id="currentStock" class="tab-content">
-            <table id="stock-table">
-                <thead>
-                    <tr>
-                        <th>物品名称</th>
-                        <th>当前数量</th>
-                        <th>单价</th>
-                        <th>总价值</th>
-                    </tr>
-                </thead>
-                <tbody id="stock-body"></tbody>
-            </table>
-            <div id="stock-empty" class="empty-message">暂无库存数据</div>
+        <div id="currentStockPanel" class="panel" style="display: none;">
+            <div class="table-container">
+                <table id="stockTable">
+                    <thead>
+                        <tr>
+                            <th>物品名称</th>
+                            <th>当前数量</th>
+                            <th>单价</th>
+                            <th>总价值</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
         
         <!-- 出入库记录 -->
-        <div id="records" class="tab-content">
+        <div id="recordsPanel" class="panel" style="display: none;">
             <div class="filter-section">
-                <div class="filter-group">
-                    <label for="record-date">选择日期：</label>
-                    <input type="date" id="record-date">
+                <div class="filter-row">
+                    <div>
+                        <label for="recordDate">选择日期</label>
+                        <input type="date" id="recordDate">
+                    </div>
+                    <div>
+                        <label for="recordType">操作类型</label>
+                        <select id="recordType">
+                            <option value="all">全部</option>
+                            <option value="in">入库</option>
+                            <option value="out">出库</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="filter-group">
-                    <label for="record-type">记录类型：</label>
-                    <select id="record-type">
-                        <option value="all">全部</option>
-                        <option value="in">入库</option>
-                        <option value="out">出库</option>
-                    </select>
-                </div>
-                <button class="btn btn-primary" onclick="window.filterRecords()">筛选</button>
-                <button class="btn" onclick="window.resetFilters()">重置</button>
+                <button onclick="window.filterRecords()">筛选记录</button>
             </div>
-            <table id="records-table">
-                <thead>
-                    <tr>
-                        <th>日期时间</th>
-                        <th>操作类型</th>
-                        <th>物品名称</th>
-                        <th>数量</th>
-                        <th>单价</th>
-                    </tr>
-                </thead>
-                <tbody id="records-body"></tbody>
-            </table>
-            <div id="records-empty" class="empty-message">暂无记录数据</div>
+            <div class="loading" id="loading">加载中...</div>
+            <div class="table-container">
+                <table id="recordsTable">
+                    <thead>
+                        <tr>
+                            <th>日期时间</th>
+                            <th>物品名称</th>
+                            <th>操作类型</th>
+                            <th>数量</th>
+                            <th>单价</th>
+                            <th>操作者</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
+        
+        <!-- 售卖记录 -->
+        <div id="salesRecordsPanel" class="panel" style="display: none;">
+            <div class="filter-section">
+                <div>
+                    <label for="salesRecordDate">选择日期</label>
+                    <input type="date" id="salesRecordDate">
+                </div>
+                <button onclick="window.filterSalesRecords()">筛选记录</button>
+            </div>
+            <div class="loading" id="salesLoading">加载中...</div>
+            <div class="table-container">
+                <table id="salesRecordsTable">
+                    <thead>
+                        <tr>
+                            <th>日期时间</th>
+                            <th>物品名称</th>
+                            <th>售卖数量</th>
+                            <th>售卖单价</th>
+                            <th>销售总额</th>
+                            <th>操作者</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="footer">库存管理系统 v1.0</div>
     </div>
     
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database-compat.js"></script>
+    
     <script>
-        // 初始化数据
-        function initData() {
-            // 尝试从localStorage获取数据，如果不存在则创建空对象
-            const inventory = localStorage.getItem('inventory') ? JSON.parse(localStorage.getItem('inventory')) : {};
-            const records = localStorage.getItem('records') ? JSON.parse(localStorage.getItem('records')) : [];
-            
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            localStorage.setItem('records', JSON.stringify(records));
+        // 初始化Firebase配置 - 请替换为您自己的配置
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT",
+            storageBucket: "YOUR_PROJECT.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        
+        // 初始化Firebase应用
+        if (typeof firebase !== 'undefined') {
+            try {
+                firebase.initializeApp(firebaseConfig);
+                window.db = firebase.database();
+                console.log('Firebase初始化成功');
+            } catch (error) {
+                console.error('Firebase初始化失败:', error);
+                window.showMessage('Firebase初始化失败，请检查配置', 'error');
+                // 使用localStorage作为降级方案
+                window.useLocalStorage = true;
+            }
+        } else {
+            console.error('Firebase SDK未加载');
+            window.useLocalStorage = true;
         }
         
-        // 切换标签页
-        function switchTab(tabName) {
-            // 隐藏所有内容
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
+        // 当前用户标识
+        window.userId = 'user_' + new Date().getTime();
+        
+        // 工具函数：显示消息
+        window.showMessage = function(message, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = message;
+            messageEl.className = 'message ' + type;
             
-            // 移除所有标签的活动状态
-            document.querySelectorAll('.tab').forEach(tab => {
+            // 3秒后自动隐藏
+            setTimeout(function() {
+                messageEl.className = 'message';
+            }, 3000);
+        };
+        
+        // 工具函数：清空错误提示
+        window.clearErrors = function(formType) {
+            const prefix = formType === 'in' ? 'in' : formType === 'out' ? 'out' : 'sales';
+            const nameError = document.getElementById(prefix + 'NameError');
+            const quantityError = document.getElementById(prefix + 'QuantityError');
+            const priceError = document.getElementById(prefix + 'PriceError');
+            
+            if (nameError) nameError.style.display = 'none';
+            if (quantityError) quantityError.style.display = 'none';
+            if (priceError) priceError.style.display = 'none';
+        };
+        
+        // 切换标签
+        window.switchTab = function(tabName) {
+            // 更新标签样式
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
                 tab.classList.remove('active');
             });
+            document.querySelector('.tab[onclick="window.switchTab(\'' + tabName + '\')"]').classList.add('active');
             
-            // 显示选中的内容和标签
-            document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
+            // 隐藏所有面板
+            const panels = document.querySelectorAll('.panel');
+            panels.forEach(panel => {
+                panel.style.display = 'none';
+            });
             
-            // 如果切换到库存或记录页面，更新数据
-            if (tabName === 'currentStock') {
-                updateStockTable();
-            } else if (tabName === 'records') {
-                updateRecordsTable();
-            }
-        }
-        
-        // 验证入库表单
-        function validateInForm() {
-            let isValid = true;
-            const name = document.getElementById('in-name').value.trim();
-            const quantity = document.getElementById('in-quantity').value;
-            const price = document.getElementById('in-price').value;
-            
-            // 清除之前的错误信息
-            document.getElementById('in-name-error').textContent = '';
-            document.getElementById('in-quantity-error').textContent = '';
-            document.getElementById('in-price-error').textContent = '';
-            
-            if (!name) {
-                document.getElementById('in-name-error').textContent = '请输入物品名称';
-                isValid = false;
-            }
-            
-            if (!quantity || parseInt(quantity) <= 0) {
-                document.getElementById('in-quantity-error').textContent = '请输入有效的数量';
-                isValid = false;
-            }
-            
-            if (!price || parseFloat(price) < 0) {
-                document.getElementById('in-price-error').textContent = '请输入有效的单价';
-                isValid = false;
-            }
-            
-            return isValid;
-        }
-        
-        // 验证出库表单
-        function validateOutForm() {
-            let isValid = true;
-            const name = document.getElementById('out-name').value.trim();
-            const quantity = document.getElementById('out-quantity').value;
-            
-            // 清除之前的错误信息
-            document.getElementById('out-name-error').textContent = '';
-            document.getElementById('out-quantity-error').textContent = '';
-            
-            if (!name) {
-                document.getElementById('out-name-error').textContent = '请输入物品名称';
-                isValid = false;
-            }
-            
-            if (!quantity || parseInt(quantity) <= 0) {
-                document.getElementById('out-quantity-error').textContent = '请输入有效的数量';
-                isValid = false;
-            }
-            
-            // 检查库存是否充足
-            if (isValid) {
-                const inventory = JSON.parse(localStorage.getItem('inventory'));
-                if (!inventory[name] || inventory[name].quantity < parseInt(quantity)) {
-                    document.getElementById('out-quantity-error').textContent = '库存不足';
-                    isValid = false;
+            // 显示选中的面板
+            const activePanel = document.getElementById(tabName + 'Panel');
+            if (activePanel) {
+                activePanel.style.display = 'block';
+                
+                // 如果是当前库存或记录面板，刷新数据
+                if (tabName === 'currentStock') {
+                    window.updateStockTable();
+                } else if (tabName === 'records') {
+                    window.loadRecords();
+                } else if (tabName === 'salesRecords') {
+                    window.loadSalesRecords();
                 }
             }
-            
-            return isValid;
-        }
+        };
         
-        // 处理入库
-        function handleStockIn() {
-            if (!validateInForm()) {
-                return;
-            }
-            
-            const name = document.getElementById('in-name').value.trim();
-            const quantity = parseInt(document.getElementById('in-quantity').value);
-            const price = parseFloat(document.getElementById('in-price').value);
-            
-            // 更新库存
-            const inventory = JSON.parse(localStorage.getItem('inventory'));
-            if (inventory[name]) {
-                // 如果物品已存在，更新数量和价格
-                inventory[name].quantity += quantity;
-                // 重新计算平均价格
-                const totalCost = (inventory[name].price * (inventory[name].quantity - quantity)) + (price * quantity);
-                inventory[name].price = totalCost / inventory[name].quantity;
+        // 获取当前库存
+        window.getCurrentStock = function(callback) {
+            if (window.useLocalStorage) {
+                // 使用localStorage
+                try {
+                    const stockData = localStorage.getItem('inventory_stock');
+                    const stock = stockData ? JSON.parse(stockData) : {};
+                    callback(stock);
+                } catch (error) {
+                    console.error('获取库存数据失败:', error);
+                    callback({});
+                }
             } else {
-                // 如果物品不存在，创建新记录
-                inventory[name] = { quantity: quantity, price: price };
+                // 使用Firebase
+                try {
+                    window.db.ref('stock').once('value', function(snapshot) {
+                        const stock = snapshot.val() || {};
+                        callback(stock);
+                    }).catch(function(error) {
+                        console.error('获取库存数据失败:', error);
+                        window.showMessage('获取库存数据失败', 'error');
+                        callback({});
+                    });
+                } catch (error) {
+                    console.error('Firebase操作失败:', error);
+                    window.showMessage('获取库存数据失败', 'error');
+                    callback({});
+                }
+            }
+        };
+        
+        // 保存当前库存
+        window.saveStock = function(stock) {
+            if (window.useLocalStorage) {
+                try {
+                    localStorage.setItem('inventory_stock', JSON.stringify(stock));
+                    return true;
+                } catch (error) {
+                    console.error('保存库存数据失败:', error);
+                    return false;
+                }
+            } else {
+                try {
+                    window.db.ref('stock').set(stock, function(error) {
+                        if (error) {
+                            console.error('保存库存数据失败:', error);
+                            window.showMessage('保存数据失败', 'error');
+                            return false;
+                        }
+                        return true;
+                    });
+                } catch (error) {
+                    console.error('Firebase操作失败:', error);
+                    window.showMessage('保存数据失败', 'error');
+                    return false;
+                }
+            }
+        };
+        
+        // 添加记录
+        window.addRecord = function(record) {
+            if (window.useLocalStorage) {
+                try {
+                    const recordsData = localStorage.getItem('inventory_records');
+                    const records = recordsData ? JSON.parse(recordsData) : [];
+                    records.push(record);
+                    localStorage.setItem('inventory_records', JSON.stringify(records));
+                } catch (error) {
+                    console.error('保存记录失败:', error);
+                }
+            } else {
+                try {
+                    const recordId = window.db.ref('records').push().key;
+                    window.db.ref('records/' + recordId).set(record);
+                } catch (error) {
+                    console.error('Firebase操作失败:', error);
+                }
+            }
+        };
+        
+        // 添加售卖记录
+        window.addSalesRecord = function(record) {
+            if (window.useLocalStorage) {
+                try {
+                    const salesData = localStorage.getItem('inventory_sales');
+                    const sales = salesData ? JSON.parse(salesData) : [];
+                    sales.push(record);
+                    localStorage.setItem('inventory_sales', JSON.stringify(sales));
+                } catch (error) {
+                    console.error('保存售卖记录失败:', error);
+                }
+            } else {
+                try {
+                    const recordId = window.db.ref('sales').push().key;
+                    window.db.ref('sales/' + recordId).set(record);
+                } catch (error) {
+                    console.error('Firebase操作失败:', error);
+                }
+            }
+        };
+        
+        // 获取记录
+        window.getRecords = function(callback) {
+            document.getElementById('loading').style.display = 'block';
+            
+            if (window.useLocalStorage) {
+                // 使用localStorage
+                try {
+                    const recordsData = localStorage.getItem('inventory_records');
+                    const records = recordsData ? JSON.parse(recordsData) : [];
+                    document.getElementById('loading').style.display = 'none';
+                    callback(records);
+                } catch (error) {
+                    console.error('获取记录失败:', error);
+                    document.getElementById('loading').style.display = 'none';
+                    callback([]);
+                }
+            } else {
+                // 使用Firebase
+                try {
+                    window.db.ref('records').once('value', function(snapshot) {
+                        const recordsData = snapshot.val();
+                        const records = recordsData ? Object.values(recordsData) : [];
+                        document.getElementById('loading').style.display = 'none';
+                        callback(records);
+                    }).catch(function(error) {
+                        console.error('获取记录失败:', error);
+                        window.showMessage('获取记录失败', 'error');
+                        document.getElementById('loading').style.display = 'none';
+                        callback([]);
+                    });
+                } catch (error) {
+                    console.error('Firebase操作失败:', error);
+                    window.showMessage('获取记录失败', 'error');
+                    document.getElementById('loading').style.display = 'none';
+                    callback([]);
+                }
+            }
+        };
+        
+        // 获取售卖记录
+        window.getSalesRecords = function(callback) {
+            document.getElementById('salesLoading').style.display = 'block';
+            
+            if (window.useLocalStorage) {
+                // 使用localStorage
+                try {
+                    const salesData = localStorage.getItem('inventory_sales');
+                    const sales = salesData ? JSON.parse(salesData) : [];
+                    document.getElementById('salesLoading').style.display = 'none';
+                    callback(sales);
+                } catch (error) {
+                    console.error('获取售卖记录失败:', error);
+                    document.getElementById('salesLoading').style.display = 'none';
+                    callback([]);
+                }
+            } else {
+                // 使用Firebase
+                try {
+                    window.db.ref('sales').once('value', function(snapshot) {
+                        const salesData = snapshot.val();
+                        const sales = salesData ? Object.values(salesData) : [];
+                        document.getElementById('salesLoading').style.display = 'none';
+                        callback(sales);
+                    }).catch(function(error) {
+                        console.error('获取售卖记录失败:', error);
+                        window.showMessage('获取售卖记录失败', 'error');
+                        document.getElementById('salesLoading').style.display = 'none';
+                        callback([]);
+                    });
+                } catch (error) {
+                    console.error('Firebase操作失败:', error);
+                    window.showMessage('获取售卖记录失败', 'error');
+                    document.getElementById('salesLoading').style.display = 'none';
+                    callback([]);
+                }
+            }
+        };
+        
+        // 物品入库
+        window.handleStockIn = function() {
+            const name = document.getElementById('inName').value.trim();
+            const quantity = parseInt(document.getElementById('inQuantity').value);
+            const price = parseFloat(document.getElementById('inPrice').value);
+            
+            // 验证输入
+            let isValid = true;
+            window.clearErrors('in');
+            
+            if (!name) {
+                document.getElementById('inNameError').textContent = '请输入物品名称';
+                document.getElementById('inNameError').style.display = 'block';
+                isValid = false;
             }
             
-            localStorage.setItem('inventory', JSON.stringify(inventory));
+            if (isNaN(quantity) || quantity <= 0) {
+                document.getElementById('inQuantityError').textContent = '请输入有效的入库数量';
+                document.getElementById('inQuantityError').style.display = 'block';
+                isValid = false;
+            }
             
-            // 添加记录
-            const records = JSON.parse(localStorage.getItem('records'));
-            records.push({
-                date: new Date().toISOString(),
-                type: 'in',
-                name: name,
-                quantity: quantity,
-                price: price
-            });
+            if (isNaN(price) || price < 0) {
+                document.getElementById('inPriceError').textContent = '请输入有效的单价';
+                document.getElementById('inPriceError').style.display = 'block';
+                isValid = false;
+            }
             
-            localStorage.setItem('records', JSON.stringify(records));
-            
-            // 清空表单
-            document.getElementById('in-name').value = '';
-            document.getElementById('in-quantity').value = '';
-            document.getElementById('in-price').value = '';
-            
-            alert('入库成功！');
-        }
-        
-        // 处理出库
-        function handleStockOut() {
-            if (!validateOutForm()) {
+            if (!isValid) {
                 return;
             }
             
-            const name = document.getElementById('out-name').value.trim();
-            const quantity = parseInt(document.getElementById('out-quantity').value);
+            // 获取当前库存并更新
+            window.getCurrentStock(function(stock) {
+                if (stock[name]) {
+                    // 物品已存在，更新数量和价格
+                    // 计算加权平均价
+                    const oldTotalValue = stock[name].quantity * stock[name].price;
+                    const newTotalValue = quantity * price;
+                    const totalQuantity = stock[name].quantity + quantity;
+                    stock[name].price = (oldTotalValue + newTotalValue) / totalQuantity;
+                    stock[name].quantity = totalQuantity;
+                } else {
+                    // 新物品
+                    stock[name] = { quantity: quantity, price: price };
+                }
+                
+                // 保存更新后的库存
+                if (window.saveStock(stock)) {
+                    // 创建入库记录
+                    const record = {
+                        timestamp: new Date().toISOString(),
+                        name: name,
+                        type: 'in',
+                        quantity: quantity,
+                        price: price,
+                        operator: window.userId
+                    };
+                    window.addRecord(record);
+                    
+                    // 清空表单
+                    document.getElementById('inName').value = '';
+                    document.getElementById('inQuantity').value = '';
+                    document.getElementById('inPrice').value = '';
+                    
+                    window.showMessage('入库成功', 'success');
+                } else {
+                    window.showMessage('入库失败', 'error');
+                }
+            });
+        };
+        
+        // 物品出库
+        window.handleStockOut = function() {
+            const name = document.getElementById('outName').value.trim();
+            const quantity = parseInt(document.getElementById('outQuantity').value);
             
-            // 更新库存
-            const inventory = JSON.parse(localStorage.getItem('inventory'));
-            const itemPrice = inventory[name].price;
-            inventory[name].quantity -= quantity;
+            // 验证输入
+            let isValid = true;
+            window.clearErrors('out');
             
-            // 如果库存为0，删除该物品
-            if (inventory[name].quantity === 0) {
-                delete inventory[name];
+            if (!name) {
+                document.getElementById('outNameError').textContent = '请输入物品名称';
+                document.getElementById('outNameError').style.display = 'block';
+                isValid = false;
             }
             
-            localStorage.setItem('inventory', JSON.stringify(inventory));
+            if (isNaN(quantity) || quantity <= 0) {
+                document.getElementById('outQuantityError').textContent = '请输入有效的出库数量';
+                document.getElementById('outQuantityError').style.display = 'block';
+                isValid = false;
+            }
             
-            // 添加记录
-            const records = JSON.parse(localStorage.getItem('records'));
-            records.push({
-                date: new Date().toISOString(),
-                type: 'out',
-                name: name,
-                quantity: quantity,
-                price: itemPrice
+            if (!isValid) {
+                return;
+            }
+            
+            // 获取当前库存并检查
+            window.getCurrentStock(function(stock) {
+                if (!stock[name]) {
+                    window.showMessage('该物品不存在', 'error');
+                    return;
+                }
+                
+                if (stock[name].quantity < quantity) {
+                    window.showMessage('库存不足，当前库存：' + stock[name].quantity, 'error');
+                    return;
+                }
+                
+                // 更新库存
+                stock[name].quantity -= quantity;
+                
+                // 如果库存为0，删除该物品
+                if (stock[name].quantity === 0) {
+                    delete stock[name];
+                }
+                
+                // 保存更新后的库存
+                if (window.saveStock(stock)) {
+                    // 创建出库记录
+                    const record = {
+                        timestamp: new Date().toISOString(),
+                        name: name,
+                        type: 'out',
+                        quantity: quantity,
+                        price: stock[name] ? stock[name].price : 0,
+                        operator: window.userId
+                    };
+                    window.addRecord(record);
+                    
+                    // 清空表单
+                    document.getElementById('outName').value = '';
+                    document.getElementById('outQuantity').value = '';
+                    
+                    window.showMessage('出库成功', 'success');
+                } else {
+                    window.showMessage('出库失败', 'error');
+                }
             });
+        };
+        
+        // 物品售卖
+        window.handleSales = function() {
+            const name = document.getElementById('salesName').value.trim();
+            const quantity = parseInt(document.getElementById('salesQuantity').value);
+            const price = parseFloat(document.getElementById('salesPrice').value);
             
-            localStorage.setItem('records', JSON.stringify(records));
+            // 验证输入
+            let isValid = true;
+            window.clearErrors('sales');
             
-            // 清空表单
-            document.getElementById('out-name').value = '';
-            document.getElementById('out-quantity').value = '';
+            if (!name) {
+                document.getElementById('salesNameError').textContent = '请输入物品名称';
+                document.getElementById('salesNameError').style.display = 'block';
+                isValid = false;
+            }
             
-            alert('出库成功！');
-        }
+            if (isNaN(quantity) || quantity <= 0) {
+                document.getElementById('salesQuantityError').textContent = '请输入有效的售卖数量';
+                document.getElementById('salesQuantityError').style.display = 'block';
+                isValid = false;
+            }
+            
+            if (isNaN(price) || price < 0) {
+                document.getElementById('salesPriceError').textContent = '请输入有效的售卖单价';
+                document.getElementById('salesPriceError').style.display = 'block';
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                return;
+            }
+            
+            // 获取当前库存并检查
+            window.getCurrentStock(function(stock) {
+                if (!stock[name]) {
+                    window.showMessage('该物品不存在', 'error');
+                    return;
+                }
+                
+                if (stock[name].quantity < quantity) {
+                    window.showMessage('库存不足，当前库存：' + stock[name].quantity, 'error');
+                    return;
+                }
+                
+                // 更新库存
+                stock[name].quantity -= quantity;
+                
+                // 如果库存为0，删除该物品
+                if (stock[name].quantity === 0) {
+                    delete stock[name];
+                }
+                
+                // 保存更新后的库存
+                if (window.saveStock(stock)) {
+                    // 创建售卖记录
+                    const salesRecord = {
+                        timestamp: new Date().toISOString(),
+                        name: name,
+                        quantity: quantity,
+                        price: price,
+                        totalAmount: quantity * price,
+                        operator: window.userId
+                    };
+                    window.addSalesRecord(salesRecord);
+                    
+                    // 同时创建出库记录
+                    const stockOutRecord = {
+                        timestamp: new Date().toISOString(),
+                        name: name,
+                        type: 'out',
+                        quantity: quantity,
+                        price: stock[name] ? stock[name].price : 0,
+                        operator: window.userId,
+                        note: '销售出库'
+                    };
+                    window.addRecord(stockOutRecord);
+                    
+                    // 清空表单
+                    document.getElementById('salesName').value = '';
+                    document.getElementById('salesQuantity').value = '';
+                    document.getElementById('salesPrice').value = '';
+                    
+                    window.showMessage('售卖成功', 'success');
+                } else {
+                    window.showMessage('售卖失败', 'error');
+                }
+            });
+        };
         
         // 更新库存表格
-        function updateStockTable() {
-            const inventory = JSON.parse(localStorage.getItem('inventory'));
-            const tbody = document.getElementById('stock-body');
-            const emptyMessage = document.getElementById('stock-empty');
-            
-            tbody.innerHTML = '';
-            
-            const items = Object.keys(inventory);
-            
-            if (items.length === 0) {
-                emptyMessage.style.display = 'block';
-                return;
-            }
-            
-            emptyMessage.style.display = 'none';
-            
-            items.forEach(name => {
-                const item = inventory[name];
-                const totalValue = item.quantity * item.price;
+        window.updateStockTable = function() {
+            window.getCurrentStock(function(stock) {
+                const tbody = document.querySelector('#stockTable tbody');
+                tbody.innerHTML = '';
                 
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${name}</td>
-                    <td>${item.quantity}</td>
-                    <td>¥${item.price.toFixed(2)}</td>
-                    <td>¥${totalValue.toFixed(2)}</td>
-                `;
+                if (Object.keys(stock).length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px; color: #999;">暂无库存数据</td></tr>';
+                    return;
+                }
                 
-                tbody.appendChild(row);
+                for (const [name, item] of Object.entries(stock)) {
+                    const row = document.createElement('tr');
+                    const totalValue = (item.quantity * item.price).toFixed(2);
+                    
+                    row.innerHTML = `
+                        <td>${name}</td>
+                        <td>${item.quantity}</td>
+                        <td>¥${item.price.toFixed(2)}</td>
+                        <td>¥${totalValue}</td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                }
             });
-        }
+        };
         
-        // 更新记录表格
-        function updateRecordsTable(filteredRecords = null) {
-            const records = filteredRecords || JSON.parse(localStorage.getItem('records'));
-            const tbody = document.getElementById('records-body');
-            const emptyMessage = document.getElementById('records-empty');
-            
+        // 加载记录
+        window.loadRecords = function() {
+            window.getRecords(function(records) {
+                window.renderRecords(records);
+            });
+        };
+        
+        // 渲染记录
+        window.renderRecords = function(records) {
+            const tbody = document.querySelector('#recordsTable tbody');
             tbody.innerHTML = '';
             
             if (records.length === 0) {
-                emptyMessage.style.display = 'block';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: #999;">暂无记录</td></tr>';
                 return;
             }
             
-            emptyMessage.style.display = 'none';
+            // 按时间倒序排序
+            records.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
             
-            // 按日期倒序排序
-            records.sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            records.forEach(record => {
-                const date = new Date(record.date);
-                const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
-                
-                const typeText = record.type === 'in' ? '<span class="stock-in">入库</span>' : '<span class="stock-out">出库</span>';
+            for (const record of records) {
+                const date = new Date(record.timestamp);
+                const formattedDate = date.toLocaleString('zh-CN');
+                const typeText = record.type === 'in' ? '入库' : '出库';
                 
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${formattedDate}</td>
-                    <td>${typeText}</td>
                     <td>${record.name}</td>
+                    <td>${typeText}</td>
                     <td>${record.quantity}</td>
                     <td>¥${record.price.toFixed(2)}</td>
+                    <td>${record.operator}</td>
                 `;
                 
                 tbody.appendChild(row);
-            });
-        }
+            }
+        };
         
         // 筛选记录
-        function filterRecords() {
-            const records = JSON.parse(localStorage.getItem('records'));
-            const selectedDate = document.getElementById('record-date').value;
-            const selectedType = document.getElementById('record-type').value;
+        window.filterRecords = function() {
+            const dateFilter = document.getElementById('recordDate').value;
+            const typeFilter = document.getElementById('recordType').value;
             
-            let filteredRecords = records;
-            
-            // 按日期筛选
-            if (selectedDate) {
-                filteredRecords = filteredRecords.filter(record => {
-                    const recordDate = new Date(record.date);
-                    const recordDateStr = `${recordDate.getFullYear()}-${(recordDate.getMonth() + 1).toString().padStart(2, '0')}-${recordDate.getDate().toString().padStart(2, '0')}`;
-                    return recordDateStr === selectedDate;
-                });
-            }
-            
-            // 按类型筛选
-            if (selectedType !== 'all') {
-                filteredRecords = filteredRecords.filter(record => record.type === selectedType);
-            }
-            
-            updateRecordsTable(filteredRecords);
-        }
-        
-        // 重置筛选条件
-        function resetFilters() {
-            document.getElementById('record-date').value = '';
-            document.getElementById('record-type').value = 'all';
-            updateRecordsTable();
-        }
-        
-        // 将函数挂载到window对象上，确保在微信环境中可用
-        window.switchTab = switchTab;
-        window.handleStockIn = handleStockIn;
-        window.handleStockOut = handleStockOut;
-        window.filterRecords = filterRecords;
-        window.resetFilters = resetFilters;
-        
-        // 初始化
-        window.onload = function() {
-            initData();
-            // 设置默认日期为今天
-            const today = new Date();
-            const todayStr = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
-            document.getElementById('record-date').value = todayStr;
+            window.getRecords(function(records) {
+                let filtered = records;
+                
+                // 按日期筛选
+                if (dateFilter) {
+                    filtered = filtered.filter(record => {
+                        const recordDate = new Date(record.timestamp).toISOString().split('T')[0];
+                        return recordDate === dateFilter;
+                    });
+                }
+                
+                // 按类型筛选
+                if (typeFilter !== 'all') {
+                    filtered = filtered.filter(record => record.type === typeFilter);
+                }
+                
+                window.renderRecords(filtered);
+            });
         };
+        
+        // 加载售卖记录
+        window.loadSalesRecords = function() {
+            window.getSalesRecords(function(records) {
+                window.renderSalesRecords(records);
+            });
+        };
+        
+        // 渲染售卖记录
+        window.renderSalesRecords = function(records) {
+            const tbody = document.querySelector('#salesRecordsTable tbody');
+            tbody.innerHTML = '';
+            
+            if (records.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: #999;">暂无售卖记录</td></tr>';
+                return;
+            }
+            
+            // 按时间倒序排序
+            records.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            // 计算总计
+            let totalQuantity = 0;
+            let totalAmount = 0;
+            
+            for (const record of records) {
+                totalQuantity += record.quantity;
+                totalAmount += record.totalAmount || (record.quantity * record.price);
+                
+                const date = new Date(record.timestamp);
+                const formattedDate = date.toLocaleString('zh-CN');
+                const recordTotalAmount = (record.totalAmount || (record.quantity * record.price)).toFixed(2);
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${formattedDate}</td>
+                    <td>${record.name}</td>
+                    <td>${record.quantity}</td>
+                    <td>¥${record.price.toFixed(2)}</td>
+                    <td>¥${recordTotalAmount}</td>
+                    <td>${record.operator}</td>
+                `;
+                
+                tbody.appendChild(row);
+            }
+            
+            // 添加总计行
+            const totalRow = document.createElement('tr');
+            totalRow.style.fontWeight = 'bold';
+            totalRow.innerHTML = `
+                <td>合计</td>
+                <td>-</td>
+                <td>${totalQuantity}</td>
+                <td>-</td>
+                <td>¥${totalAmount.toFixed(2)}</td>
+                <td>-</td>
+            `;
+            tbody.appendChild(totalRow);
+        };
+        
+        // 筛选售卖记录
+        window.filterSalesRecords = function() {
+            const dateFilter = document.getElementById('salesRecordDate').value;
+            
+            window.getSalesRecords(function(records) {
+                let filtered = records;
+                
+                // 按日期筛选
+                if (dateFilter) {
+                    filtered = filtered.filter(record => {
+                        const recordDate = new Date(record.timestamp).toISOString().split('T')[0];
+                        return recordDate === dateFilter;
+                    });
+                }
+                
+                window.renderSalesRecords(filtered);
+            });
+        };
+        
+        // 初始化：设置今天的日期
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('recordDate').value = today;
+            document.getElementById('salesRecordDate').value = today;
+        });
     </script>
 </body>
 </html>
