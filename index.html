@@ -279,15 +279,15 @@
         <!-- 标签页 -->
         <div class="tabs">
             <div class="tab-row">
-                <button class="tab-button active" onclick="switchTab('currentStock')">当前库存</button>
-                <button class="tab-button" onclick="switchTab('stockIn')">物品入库</button>
-                <button class="tab-button" onclick="switchTab('stockOut')">物品出库</button>
-                <button class="tab-button" onclick="switchTab('records')">出入库记录</button>
+                <button class="tab-button active" onclick="window.switchTab('currentStock')">当前库存</button>
+                <button class="tab-button" onclick="window.switchTab('stockIn')">物品入库</button>
+                <button class="tab-button" onclick="window.switchTab('stockOut')">物品出库</button>
+                <button class="tab-button" onclick="window.switchTab('records')">出入库记录</button>
             </div>
             <div class="tab-row">
-                <button class="tab-button" onclick="switchTab('sell')">物品售卖</button>
-                <button class="tab-button" onclick="switchTab('sellRecords')">售卖记录</button>
-                <button class="tab-button" onclick="switchTab('sync')">数据同步</button>
+                <button class="tab-button" onclick="window.switchTab('sell')">物品售卖</button>
+                <button class="tab-button" onclick="window.switchTab('sellRecords')">售卖记录</button>
+                <button class="tab-button" onclick="window.switchTab('sync')">数据同步</button>
             </div>
         </div>
         
@@ -330,7 +330,7 @@
                 <label for="stockInDate">日期</label>
                 <input type="date" id="stockInDate" required>
             </div>
-            <button onclick="stockIn()">确认入库</button>
+            <button onclick="window.stockIn()">确认入库</button>
         </div>
         
         <!-- 物品出库 -->
@@ -420,7 +420,7 @@
                 <label for="sellDate">销售日期</label>
                 <input type="date" id="sellDate" required>
             </div>
-            <button onclick="sellItem()">确认售卖</button>
+            <button onclick="window.sellItem()">确认售卖</button>
         </div>
         
         <!-- 售卖记录 -->
@@ -444,7 +444,7 @@
                 </div>
             </div>
             <div class="filter-group">
-                <select id="sellRecordDateFilter" onchange="filterSellRecords()">
+                <select id="sellRecordDateFilter" onchange="window.filterSellRecords()">
                     <option value="all">所有日期</option>
                 </select>
             </div>
@@ -470,14 +470,14 @@
         <!-- 数据同步 -->
         <div id="sync" class="tab-content">
             <h3>数据导出</h3>
-            <button onclick="exportData()" class="btn-success">导出数据</button>
+            <button onclick="window.exportData()" class="btn-success">导出数据</button>
             
             <h3 style="margin-top: 30px;">数据导入</h3>
             <div class="form-group">
                 <label for="importFile">选择JSON文件</label>
                 <input type="file" id="importFile" accept=".json">
             </div>
-            <button onclick="importData()" class="btn-success">导入数据</button>
+            <button onclick="window.importData()" class="btn-success">导入数据</button>
         </div>
     </div>
     
@@ -494,8 +494,8 @@
                 <label for="restoreStock">同时恢复库存</label>
             </div>
             <div class="modal-footer">
-                <button onclick="closeDeleteModal()" class="btn-sm">取消</button>
-                <button onclick="confirmDelete()" class="btn-sm btn-danger">删除</button>
+                <button onclick="window.closeDeleteModal()" class="btn-sm">取消</button>
+                <button onclick="window.confirmDelete()" class="btn-sm btn-danger">删除</button>
             </div>
         </div>
     </div>
@@ -517,8 +517,8 @@
                 <input type="number" id="editPrice" min="0" step="0.01" required>
             </div>
             <div class="modal-footer">
-                <button onclick="closeEditModal()" class="btn-sm">取消</button>
-                <button onclick="saveEditStock()" class="btn-sm btn-success">保存</button>
+                <button onclick="window.closeEditModal()" class="btn-sm">取消</button>
+                <button onclick="window.saveEditStock()" class="btn-sm btn-success">保存</button>
             </div>
         </div>
     </div>
@@ -536,8 +536,8 @@
                 <input type="number" id="editSellPrice" min="0" step="0.01" required>
             </div>
             <div class="modal-footer">
-                <button onclick="closeEditSellModal()" class="btn-sm">取消</button>
-                <button onclick="saveEditSell()" class="btn-sm btn-success">保存</button>
+                <button onclick="window.closeEditSellModal()" class="btn-sm">取消</button>
+                <button onclick="window.saveEditSell()" class="btn-sm btn-success">保存</button>
             </div>
         </div>
     </div>
@@ -553,9 +553,9 @@
         
         // 初始化页面
         window.addEventListener('load', function() {
-            initDateInputs();
-            loadData();
-            updateAllTabs();
+            window.initDateInputs();
+            window.loadData();
+            window.updateAllTabs();
         });
         
         // 初始化日期输入框
@@ -584,40 +584,40 @@
             }
             
             // 更新标签页数据
-            updateTabData(tabId);
+            window.updateTabData(tabId);
         };
         
         // 更新特定标签页数据
         window.updateTabData = function(tabId) {
             switch(tabId) {
                 case 'currentStock':
-                    updateStockTable();
+                    window.updateStockTable();
                     break;
                 case 'stockOut':
-                    updateStockOutOptions();
+                    window.updateStockOutOptions();
                     break;
                 case 'records':
-                    updateRecordsTable();
-                    updateDateFilter('recordDateFilter');
+                    window.updateRecordsTable();
+                    window.updateDateFilter('recordDateFilter');
                     break;
                 case 'sell':
-                    updateSellOptions();
-                    toggleSellSource();
+                    window.updateSellOptions();
+                    window.toggleSellSource();
                     break;
                 case 'sellRecords':
-                    updateSellRecordsTable();
-                    updateSellStats();
-                    updateDateFilter('sellRecordDateFilter');
+                    window.updateSellRecordsTable();
+                    window.updateSellStats();
+                    window.updateDateFilter('sellRecordDateFilter');
                     break;
             }
         };
         
         // 更新所有标签页数据
         window.updateAllTabs = function() {
-            updateStockTable();
-            updateStockOutOptions();
-            updateSellOptions();
-            toggleSellSource();
+            window.updateStockTable();
+            window.updateStockOutOptions();
+            window.updateSellOptions();
+            window.toggleSellSource();
         };
         
         // 从localStorage加载数据
@@ -636,7 +636,7 @@
                 if (!Array.isArray(records)) records = [];
                 if (!Array.isArray(sellRecords)) sellRecords = [];
             } catch (error) {
-                showToast('数据加载失败，将使用空数据', 'error');
+                window.showToast('数据加载失败，将使用空数据', 'error');
                 inventory = [];
                 records = [];
                 sellRecords = [];
@@ -650,7 +650,7 @@
                 localStorage.setItem('records', JSON.stringify(records));
                 localStorage.setItem('sellRecords', JSON.stringify(sellRecords));
             } catch (error) {
-                showToast('数据保存失败', 'error');
+                window.showToast('数据保存失败', 'error');
             }
         };
         
@@ -829,15 +829,15 @@
                 time: new Date().toLocaleString()
             });
             
-            saveData();
-            updateAllTabs();
+            window.saveData();
+            window.updateAllTabs();
             
             // 重置表单
             document.getElementById('inItemName').value = '';
             document.getElementById('inQuantity').value = '';
             document.getElementById('inPrice').value = '';
             
-            showToast('入库成功');
+            window.showToast('入库成功');
             // 显示成功消息
             window.showSuccessMessage('物品入库成功');
         };
@@ -870,12 +870,12 @@
             const item = inventory.find(i => i.id === itemId);
             
             if (!item) {
-                showToast('物品不存在', 'error');
+                window.showToast('物品不存在', 'error');
                 return;
             }
             
             if (item.quantity < quantity) {
-                showToast('出库数量不能超过库存数量', 'error');
+                window.showToast('出库数量不能超过库存数量', 'error');
                 return;
             }
             
@@ -900,13 +900,13 @@
                 time: new Date().toLocaleString()
             });
             
-            saveData();
-            updateAllTabs();
+            window.saveData();
+            window.updateAllTabs();
             
             // 重置表单
             document.getElementById('outQuantity').value = '';
             
-            showToast('出库成功');
+            window.showToast('出库成功');
             // 显示成功消息
             window.showSuccessMessage('物品出库成功');
         };
@@ -947,7 +947,7 @@
         
         // 筛选记录
         window.filterRecords = function() {
-            updateRecordsTable();
+            window.updateRecordsTable();
         };
         
         // 获取筛选后的记录
@@ -1025,12 +1025,12 @@
                 // 从库存中销售
                 const item = inventory.find(i => i.id === itemSelect);
                 if (!item) {
-                    showToast('物品不存在', 'error');
+                    window.showToast('物品不存在', 'error');
                     return;
                 }
                 
                 if (item.quantity < quantity) {
-                    showToast('销售数量不能超过库存数量', 'error');
+                    window.showToast('销售数量不能超过库存数量', 'error');
                     return;
                 }
                 
@@ -1059,7 +1059,7 @@
             } else {
                 // 手动输入的非库存物品
                 if (!manualName) {
-                    showToast('请输入物品名称', 'error');
+                    window.showToast('请输入物品名称', 'error');
                     return;
                 }
                 itemName = manualName;
@@ -1079,14 +1079,14 @@
                 time: new Date().toLocaleString()
             });
             
-            saveData();
-            updateAllTabs();
+            window.saveData();
+            window.updateAllTabs();
             
             // 重置表单
             document.getElementById('sellQuantity').value = '';
             document.getElementById('sellPrice').value = '';
             
-            showToast('售卖成功');
+            window.showToast('售卖成功');
             // 显示成功消息
             window.showSuccessMessage('物品售卖成功');
         };
@@ -1152,8 +1152,8 @@
         
         // 筛选售卖记录
         window.filterSellRecords = function() {
-            updateSellRecordsTable();
-            updateSellStats();
+            window.updateSellRecordsTable();
+            window.updateSellStats();
         };
         
         // 获取筛选后的售卖记录
@@ -1203,19 +1203,19 @@
             const restoreStock = document.getElementById('restoreStock').checked;
             
             if (currentDeleteType === 'record') {
-                deleteRecordConfirmed(currentDeleteId, restoreStock);
+                window.deleteRecordConfirmed(currentDeleteId, restoreStock);
             } else if (currentDeleteType === 'sellRecord') {
-                deleteSellRecordConfirmed(currentDeleteId, restoreStock);
+                window.deleteSellRecordConfirmed(currentDeleteId, restoreStock);
             } else if (currentDeleteType === 'stock') {
-                deleteStockItemConfirmed(currentDeleteId);
+                window.deleteStockItemConfirmed(currentDeleteId);
             }
             
-            closeDeleteModal();
+            window.closeDeleteModal();
         };
         
         // 删除库存物品
         window.deleteStockItem = function(id) {
-            openDeleteModal(id, 'stock');
+            window.openDeleteModal(id, 'stock');
         };
         
         // 确认删除库存物品
@@ -1237,9 +1237,9 @@
                     time: new Date().toLocaleString()
                 });
                 
-                saveData();
-                updateAllTabs();
-                showToast('库存删除成功');
+                window.saveData();
+                window.updateAllTabs();
+                window.showToast('库存删除成功');
                  // 显示成功消息
                 window.showSuccessMessage('物品删除成功');
             }
@@ -1249,7 +1249,7 @@
         window.deleteRecord = function(id) {
             const record = records.find(r => r.id === id);
             const showRestoreOption = record && (record.type === '出库' || record.type === '售卖');
-            openDeleteModal(id, 'record', showRestoreOption);
+            window.openDeleteModal(id, 'record', showRestoreOption);
         };
         
         // 确认删除记录
@@ -1273,10 +1273,10 @@
                 
                 records = records.filter(r => r.id !== id);
                 
-                saveData();
-                updateAllTabs();
-                updateRecordsTable();
-                showToast('记录删除成功' + (restoreStock ? '，库存已恢复' : ''));
+                window.saveData();
+                window.updateAllTabs();
+                window.updateRecordsTable();
+                window.showToast('记录删除成功' + (restoreStock ? '，库存已恢复' : ''));
                  // 显示成功消息
                 window.showSuccessMessage('记录删除成功');
             }
@@ -1286,7 +1286,7 @@
         window.deleteSellRecord = function(id) {
             const record = sellRecords.find(r => r.id === id);
             const showRestoreOption = record && record.source === '来自库存';
-            openDeleteModal(id, 'sellRecord', showRestoreOption);
+            window.openDeleteModal(id, 'sellRecord', showRestoreOption);
         };
         
         // 确认删除售卖记录
@@ -1323,11 +1323,11 @@
                 
                 sellRecords = sellRecords.filter(r => r.id !== id);
                 
-                saveData();
-                updateAllTabs();
-                updateSellRecordsTable();
-                updateSellStats();
-                showToast('售卖记录删除成功' + (restoreStock ? '，库存已恢复' : ''));
+                window.saveData();
+                window.updateAllTabs();
+                window.updateSellRecordsTable();
+                window.updateSellStats();
+                window.showToast('售卖记录删除成功' + (restoreStock ? '，库存已恢复' : ''));
             }
         };
         
@@ -1355,7 +1355,7 @@
             const price = parseFloat(document.getElementById('editPrice').value);
             
             if (isNaN(quantity) || quantity < 0 || isNaN(price) || price < 0) {
-                showToast('请填写正确的信息', 'error');
+                window.showToast('请填写正确的信息', 'error');
                 return;
             }
             
@@ -1384,10 +1384,10 @@
                     });
                 }
                 
-                saveData();
-                updateAllTabs();
-                closeEditModal();
-                showToast('库存更新成功');
+                window.saveData();
+                window.updateAllTabs();
+                window.closeEditModal();
+                window.showToast('库存更新成功');
             }
         };
         
@@ -1414,7 +1414,7 @@
             const sellPrice = parseFloat(document.getElementById('editSellPrice').value);
             
             if (isNaN(originalPrice) || originalPrice < 0 || isNaN(sellPrice) || sellPrice < 0) {
-                showToast('请填写正确的信息', 'error');
+                window.showToast('请填写正确的信息', 'error');
                 return;
             }
             
@@ -1424,11 +1424,11 @@
                 record.sellPrice = sellPrice;
                 record.totalPrice = (record.quantity * sellPrice).toFixed(2);
                 
-                saveData();
-                updateSellRecordsTable();
-                updateSellStats();
-                closeEditSellModal();
-                showToast('售卖记录更新成功');
+                window.saveData();
+                window.updateSellRecordsTable();
+                window.updateSellStats();
+                window.closeEditSellModal();
+                window.showToast('售卖记录更新成功');
             }
         };
         
@@ -1451,14 +1451,14 @@
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             
-            showToast('数据导出成功');
+            window.showToast('数据导出成功');
         };
         
         // 导入数据
         window.importData = function() {
             const fileInput = document.getElementById('importFile');
             if (!fileInput.files || fileInput.files.length === 0) {
-                showToast('请选择要导入的文件', 'error');
+                window.showToast('请选择要导入的文件', 'error');
                 return;
             }
             
@@ -1478,28 +1478,28 @@
                         records = data.records;
                         sellRecords = data.sellRecords;
                         
-                        saveData();
-                        updateAllTabs();
-                        updateRecordsTable();
-                        updateSellRecordsTable();
-                        updateSellStats();
-                        updateDateFilter('recordDateFilter');
-                        updateDateFilter('sellRecordDateFilter');
+                        window.saveData();
+                        window.updateAllTabs();
+                        window.updateRecordsTable();
+                        window.updateSellRecordsTable();
+                        window.updateSellStats();
+                        window.updateDateFilter('recordDateFilter');
+                        window.updateDateFilter('sellRecordDateFilter');
                         
                         // 清空文件输入
                         fileInput.value = '';
                         
-                        showToast('数据导入成功');
+                        window.showToast('数据导入成功');
                     } else {
-                        showToast('无效的数据格式', 'error');
+                        window.showToast('无效的数据格式', 'error');
                     }
                 } catch (error) {
-                    showToast('数据解析失败', 'error');
+                    window.showToast('数据解析失败', 'error');
                 }
             };
             
             reader.onerror = function() {
-                showToast('文件读取失败', 'error');
+                window.showToast('文件读取失败', 'error');
             };
             
             reader.readAsText(file);
