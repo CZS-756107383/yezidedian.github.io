@@ -395,6 +395,10 @@
                     <div class="stat-value" id="total-sales-amount">¥0.00</div>
                     <div class="stat-label">总销售额</div>
                 </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="total-profit">¥0.00</div>
+                    <div class="stat-label">盈利</div>
+                </div>
             </div>
             <div class="filter-container">
                 <input type="date" id="sell-date" placeholder="选择日期">
@@ -864,6 +868,7 @@
                 document.getElementById('total-sales-quantity').textContent = totalQuantity;
                 document.getElementById('total-original-price').textContent = `¥${totalOriginalPrice.toFixed(2)}`;
                 document.getElementById('total-sales-amount').textContent = `¥${totalSalesAmount.toFixed(2)}`;
+                document.getElementById('total-profit').textContent = `¥${(totalSalesAmount - totalOriginalPrice).toFixed(2)}`;
             };
             
             // 筛选售卖记录
