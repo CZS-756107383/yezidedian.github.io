@@ -287,26 +287,26 @@
 
         /* 优化表格样式 */
         .responsive-table {
-            /* 确保表格不会自动调整列宽 */
-            table-layout: fixed;
-            /* 保持表格的最小宽度 */
-            min-width: 100%;
+            /* 允许表格根据内容自动调整列宽 */
+            table-layout: auto;
             /* 移除表格边框之间的间距 */
             border-collapse: collapse;
+            /* 确保表格可以水平滚动 */
+            width: 100%;
+            /* 避免表格被压缩 */
+            min-width: 100%;
         }
 
         /* 优化表格头部 */
         .responsive-table th {
-            /* 设置固定宽度 */
-            min-width: 80px;
-            /* 让内容能够自动换行 */
-            word-wrap: break-word;
-            /* 固定表头（可选） */
+            /* 内容保持一行显示 */
+            white-space: nowrap;
+            /* 固定表头 */
             position: sticky;
             top: 0;
             background-color: #f8f9fa;
             z-index: 10;
-            /* 适应移动设备的字体大小 */
+            /* 正常字体大小 */
             font-size: 14px;
             /* 单元格内边距优化 */
             padding: 8px 5px;
@@ -314,10 +314,10 @@
 
         /* 优化表格内容单元格 */
         .responsive-table td {
-            /* 让内容能够自动换行 */
-            word-wrap: break-word;
-            /* 适应移动设备的字体大小 */
-            font-size: 13px;
+            /* 内容保持一行显示 */
+            white-space: nowrap;
+            /* 正常字体大小 */
+            font-size: 14px;
             /* 单元格内边距优化 */
             padding: 8px 5px;
         }
@@ -329,17 +329,23 @@
             min-width: 100px;
         }
 
-        /* 针对小屏幕的额外优化 */
+        /* 针对小屏幕的优化 */
         @media (max-width: 480px) {
             .responsive-table th {
-                font-size: 12px;
+                font-size: 13px;
                 padding: 6px 3px;
             }
             
             .responsive-table td {
-                font-size: 11px;
+                font-size: 13px;
                 padding: 6px 3px;
             }
+        }
+
+        /* 确保表格容器可以水平滚动 */
+        .table-container {
+            overflow-x: auto;
+            width: 100%;
         }
         
     </style>
@@ -556,18 +562,17 @@
         </div>
         
         <!-- 数据同步 -->
-        <div id="sync" class="tab-content"> 
-            <div class="message" id="syncMessage"></div> 
-            <h3>数据导出</h3> 
-            <button onclick="window.exportData()" class="btn-success">导出数据</button> 
+        <div id="sync" class="tab-content">
+            <div class="message" id="syncMessage"></div>
+            <h3>数据导出</h3>
+            <button onclick="window.exportData()" class="btn-success">导出数据</button>
             
-            <h3 style="margin-top: 30px;">数据导入</h3> 
-            <div class="form-group"> 
-                <label for="importFile">选择JSON文件</label> 
-                <input type="file" id="importFile" accept=".json"> 
-                <small class="help-text">提示：可从微信聊天中获取JSON文件后选择</small> 
-            </div> 
-            <button onclick="window.importData()" class="btn-success">导入数据</button> 
+            <h3 style="margin-top: 30px;">数据导入</h3>
+            <div class="form-group">
+                <label for="importFile">选择JSON文件</label>
+                <input type="file" id="importFile" accept=".json">
+            </div>
+            <button onclick="window.importData()" class="btn-success">导入数据</button>
         </div>
     </div>
     
@@ -1567,17 +1572,12 @@
         // 导入数据 会覆盖原先的数据
         window.importData = function() {
             const fileInput = document.getElementById('importFile');
-            if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-                window.showToast('请先选择JSON文件');
+            if (!fileInput.files || fileInput.files.length === 0) {
+                window.showToast('请选择要导入的文件', 'error');
                 return;
             }
             
             const file = fileInput.files[0];
-            if (file.type && file.type !== 'application/json' && !file.name.endsWith('.json')) {
-                window.showToast('请选择有效的JSON文件');
-                return;
-            }
-                
             const reader = new FileReader();
             
             reader.onload = function(e) {
