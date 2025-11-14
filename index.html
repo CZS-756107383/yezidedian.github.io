@@ -564,7 +564,7 @@
         // 从localStorage加载数据
         window.loadData = function() {
             try {
-                const savedData = localStorage.getItem('inventoryData');
+                const savedData = localStorage.getItem('localInventoryData');
                 if (savedData) {
                     window.inventoryData = JSON.parse(savedData);
                 }
@@ -576,7 +576,7 @@
         // 保存数据到localStorage
         window.saveData = function() {
             try {
-                localStorage.setItem('inventoryData', JSON.stringify(window.inventoryData));
+                localStorage.setItem('localInventoryData', JSON.stringify(window.inventoryData));
             } catch (error) {
                 window.showToast('数据保存失败', 'error');
             }
@@ -1454,7 +1454,7 @@
             }
         };
         
-        // 导入数据
+        // 导入数据 会覆盖原先的数据
         window.importData = function() {
             const fileInput = document.getElementById('importFile');
             if (!fileInput.files || fileInput.files.length === 0) {
@@ -1505,7 +1505,7 @@
             reader.readAsText(file);
         };
 
-        // // 处理文件导入
+        // // 处理文件导入 允许重复导入同一文件
         // window.handleFileImport = function(event) {
         //     const file = event.target.files[0];
         //     if (!file) return;
