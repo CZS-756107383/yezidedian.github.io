@@ -1568,13 +1568,13 @@
         window.importData = function() {
             const fileInput = document.getElementById('importFile');
             if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-                showToastMessage('请先选择JSON文件');
+                window.showToast('请先选择JSON文件');
                 return;
             }
             
             const file = fileInput.files[0];
             if (file.type && file.type !== 'application/json' && !file.name.endsWith('.json')) {
-                showToastMessage('请选择有效的JSON文件');
+                window.showToast('请选择有效的JSON文件');
                 return;
             }
                 
