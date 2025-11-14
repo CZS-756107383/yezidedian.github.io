@@ -1429,24 +1429,29 @@
         
         // 导出数据
         window.exportData = function() {
-            const data = {
-                inventory: window.inventoryData.inventory,
-                records: window.inventoryData.records,
-                sellRecords: window.inventoryData.sellRecords,
-                exportDate: new Date().toLocaleString()
-            };
-            
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `inventory_data_${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            window.showToast('数据导出成功');
+            try {
+                const dataStr = JSON.stringify(window.inventoryData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                
+                // 创建下载链接
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `inventory-data-${new Date().toISOString().split('T')[0]}.json`;
+                
+                // 触发下载
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // 释放URL对象
+                setTimeout(() => URL.revokeObjectURL(url), 100);
+                
+                window.showToast('数据导出成功');
+            } catch (e) {
+                console.error('导出数据失败:', e);
+                alert('数据导出失败，请重试');
+            }
         };
         
         // 导入数据
@@ -1499,6 +1504,45 @@
             
             reader.readAsText(file);
         };
+
+        // // 处理文件导入
+        // window.handleFileImport = function(event) {
+        //     const file = event.target.files[0];
+        //     if (!file) return;
+            
+        //     const reader = new FileReader();
+        //     reader.onload = function(e) {
+        //         try {
+        //             const importedData = JSON.parse(e.target.result);
+                    
+        //             // 验证数据格式
+        //             if (!importedData.stock || !importedData.records || !importedData.salesRecords) {
+        //                 throw new Error('无效的数据格式');
+        //             }
+                    
+        //             // 合并数据
+        //             window.inventoryData = importedData;
+                    
+        //             // 保存并更新界面
+        //             window.saveData();
+        //             window.updateStockTable();
+        //             window.updateStockRecords();
+        //             window.updateSalesRecords();
+        //             window.updateItemDropdowns();
+                    
+        //             window.showSuccessMessage('数据导入成功');
+        //             document.getElementById('importMessage').textContent = '';
+        //         } catch (e) {
+        //             console.error('导入数据失败:', e);
+        //             document.getElementById('importMessage').textContent = '数据导入失败，请检查文件格式';
+        //         }
+        //     };
+            
+        //     reader.readAsText(file);
+            
+        //     // 清空文件输入，允许重复导入同一文件
+        //     event.target.value = '';
+        // };
         
         // 生成唯一ID
         window.generateId = function() {
