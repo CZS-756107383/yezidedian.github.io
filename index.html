@@ -172,34 +172,40 @@
             width: auto;
         }
         
-         .stats-container {
+        .stats-container {
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
             margin-bottom: 20px;
             padding: 15px;
             background-color: #fafafa;
             border-radius: 4px;
-            overflow-x: auto;
-            white-space: nowrap;
+            /* 移除overflow-x: auto和white-space: nowrap */
         }
-        
+
         .stat-card {
-            display: inline-block;
-            padding: 10px 15px;
-            margin: 0 5px;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 10px;
+            margin: 0 2px 8px 2px;
             text-align: center;
-            min-width: 120px;
+            min-width: 23%; /* 根据手机屏幕调整，确保4个卡片可以在一行显示 */
+            box-sizing: border-box;
         }
-        
+
         .stat-value {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             color: #1976d2;
+            margin-bottom: 2px;
         }
-        
+
         .stat-label {
-            font-size: 14px;
+            font-size: 12px;
             color: #666;
+            /* 可选：自动换行以适应小屏幕 */
+            word-wrap: break-word;
         }
         
         .filter-group {
@@ -261,24 +267,6 @@
             justify-content: flex-end;
         }
         
-        /* @media (max-width: 768px) {
-            .tab-button {
-                font-size: 14px;
-                padding: 12px;
-            }
-            
-            .tab-content {
-                padding: 15px;
-            }
-            
-            table {
-                font-size: 14px;
-            }
-            
-            th, td {
-                padding: 8px;
-            }
-        } */
     </style>
 </head>
 <body>
@@ -504,9 +492,8 @@
         <div class="modal-content">
             <h3>确认删除</h3>
             <p id="deleteModalText">确定要删除这条记录吗？</p>
-            <div id="restoreStockCheckbox" style="margin: 15px 0;">
-                <input type="checkbox" id="restoreStock">
-                <label for="restoreStock">同时恢复库存</label>
+            <div class="confirm-options" style="margin: 15px 0;">
+                <label><input type="checkbox" id="restore-inventory"> 同时恢复相关库存</label>
             </div>
             <div class="modal-footer">
                 <button onclick="window.closeDeleteModal()" class="btn-sm">取消</button>
@@ -1172,8 +1159,8 @@
             currentDeleteType = type;
             
             const modal = document.getElementById('deleteModal');
-            const restoreCheckbox = document.getElementById('restoreStockCheckbox');
             const modalText = document.getElementById('deleteModalText');
+            const restoreCheckbox = document.getElementById('restore-inventory');
             
             if (type === 'record') {
                 const record = records.find(r => r.id === id);
@@ -1186,8 +1173,8 @@
                 modalText.textContent = `确定要删除「${item ? item.name : ''}」的库存记录吗？`;
             }
             
-            restoreCheckbox.style.display = showRestoreOption ? 'block' : 'none';
-            document.getElementById('restoreStock').checked = false;
+            restoreCheckbox.parentElement.style.display = showRestoreOption ? 'block' : 'none';
+            restoreCheckbox.checked = false;
             
             modal.style.display = 'flex';
         };
@@ -1201,7 +1188,7 @@
         
         // 确认删除
         window.confirmDelete = function() {
-            const restoreStock = document.getElementById('restoreStock').checked;
+            const restoreStock = document.getElementById('restore-inventory').checked;
             
             if (currentDeleteType === 'record') {
                 window.deleteRecordConfirmed(currentDeleteId, restoreStock);
