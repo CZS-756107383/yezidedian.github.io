@@ -548,7 +548,7 @@
     
     <script>
         // 数据结构定义
-        window.inventoryData = {
+        window.localData = {
             inventory: [],
             records: [],
             sellRecords: []
@@ -564,9 +564,9 @@
         // 从localStorage加载数据
         window.loadData = function() {
             try {
-                const savedData = localStorage.getItem('localInventoryData');
+                const savedData = localStorage.getItem('localData');
                 if (savedData) {
-                    window.inventoryData = JSON.parse(savedData);
+                    window.localData = JSON.parse(savedData);
                 }
             } catch (error) {
                 window.showToast('数据加载失败，将使用空数据', 'error');
@@ -576,7 +576,7 @@
         // 保存数据到localStorage
         window.saveData = function() {
             try {
-                localStorage.setItem('localInventoryData', JSON.stringify(window.inventoryData));
+                localStorage.setItem('localData', JSON.stringify(window.localData));
             } catch (error) {
                 window.showToast('数据保存失败', 'error');
             }
@@ -680,9 +680,9 @@
             
             let dates = [];
             if (filterId === 'recordDateFilter') {
-                dates = [...new Set(window.inventoryData.records.map(record => record.date))];
+                dates = [...new Set(window.localData.records.map(record => record.date))];
             } else if (filterId === 'sellRecordDateFilter') {
-                dates = [...new Set(window.inventoryData.sellRecords.map(record => record.date))];
+                dates = [...new Set(window.localData.sellRecords.map(record => record.date))];
             }
             
             // 按日期倒序排序
@@ -706,12 +706,12 @@
             const tbody = document.getElementById('stockTableBody');
             tbody.innerHTML = '';
             
-            if (window.inventoryData.inventory.length === 0) {
+            if (window.localData.inventory.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">暂无库存数据</td></tr>';
                 return;
             }
             
-            window.inventoryData.inventory.forEach(item => {
+            window.localData.inventory.forEach(item => {
                 const tr = document.createElement('tr');
                 const totalPrice = (item.quantity * item.price || 0).toFixed(2);
                 
@@ -774,7 +774,7 @@
             const dateFilter = document.getElementById('recordDateFilter').value;
             const typeFilter = document.getElementById('recordTypeFilter').value;
             
-            return window.inventoryData.records.filter(record => {
+            return window.localData.records.filter(record => {
                 const dateMatch = dateFilter === 'all' || record.date === dateFilter;
                 const typeMatch = typeFilter === 'all' || record.type === typeFilter;
                 return dateMatch && typeMatch;
@@ -808,7 +808,7 @@
             window.showMessage('stockIn', '物品入库成功11111');
             
             // 检查是否已存在该物品
-            const existingItem = window.inventoryData.inventory.find(item => item.name === name);
+            const existingItem = window.localData.inventory.find(item => item.name === name);
             if (existingItem) {
                 window.showMessage('stockIn', '物品入库成功22222');
                 // 更新现有物品库存
@@ -822,7 +822,7 @@
             } else {
                 window.showMessage('stockIn', '物品入库成功33333');
                 // 添加新物品
-                inventory.push({
+                window.localData.inventory.push({
                     id: window.generateId(),
                     name: name,
                     quantity: quantity,
@@ -831,7 +831,7 @@
             }
             window.showMessage('stockIn', '物品入库成功444444');
             // 记录入库操作
-            window.inventoryData.records.push({
+            window.localData.records.push({
                 id: window.generateId(),
                 date: date,
                 name: name,
@@ -866,7 +866,7 @@
             stockOutItemName.innerHTML = '<option value="">请选择物品</option>';
             
             
-            window.inventoryData.inventory.forEach(item => {
+            window.localData.inventory.forEach(item => {
                 const option = document.createElement('option');
                 option.value = item.id;
                 option.textContent = `${item.name} (库存: ${item.quantity}, 单价: ¥${item.price ? item.price.toFixed(2) : '0.00'})`;
@@ -889,7 +889,7 @@
                 return;
             }
             
-            const item = window.inventoryData.inventory.find(i => i.id === itemId);
+            const item = window.localData.inventory.find(i => i.id === itemId);
             if (!item) {
                 window.showMessage('stockOut', '物品不存在', false);
                 return;
@@ -905,11 +905,11 @@
             
             // 如果库存为0，移除该物品
             if (item.quantity === 0) {
-                window.inventoryData.inventory = window.inventoryData.inventory.filter(i => i.id !== itemId);
+                window.localData.inventory = window.localData.inventory.filter(i => i.id !== itemId);
             }
             
             // 记录出库操作
-            window.inventoryData.records.push({
+            window.localData.records.push({
                 id: window.generateId(),
                 date: date,
                 name: item.name,
@@ -941,7 +941,7 @@
             // 清空下拉列表
             sellItemSelect.innerHTML = '<option value="">请选择物品</option>';
             
-            window.inventoryData.inventory.forEach(item => {
+            window.localData.inventory.forEach(item => {
                 const option = document.createElement('option');
                 option.value = item.id;
                 option.textContent = `${item.name} (库存: ${item.quantity}, 单价: ¥${item.price ? item.price.toFixed(2) : '0.00'})`;
@@ -956,7 +956,7 @@
             
             if (itemSelect.value) {
                 // 自动填充选择的物品信息
-                const item = window.inventoryData.inventory.find(i => i.id === itemSelect.value);
+                const item = window.localData.inventory.find(i => i.id === itemSelect.value);
                 if (item) {
                     document.getElementById('sellOriginalPrice').value = item.price ? item.price.toFixed(2) : '0.00';
                 }
@@ -965,7 +965,7 @@
         
         // 监听售卖物品选择变化
         document.getElementById('sellItemSelect').addEventListener('change', function() {
-            const item = window.inventoryData.inventory.find(i => i.id === this.value);
+            const item = window.localData.inventory.find(i => i.id === this.value);
             if (item) {
                 document.getElementById('sellOriginalPrice').value = item.price ? item.price.toFixed(2) : '0.00';
             }
@@ -998,7 +998,7 @@
             
             if (isFromInventory) {
                 // 从库存中销售
-                const item = window.inventoryData.inventory.find(i => i.id === itemSelect);
+                const item = window.localData.inventory.find(i => i.id === itemSelect);
                 if (!item) {
                     window.showMessage('sell', '物品不存在', false);
                     return;
@@ -1016,11 +1016,11 @@
                 
                 // 如果库存为0，移除该物品
                 if (item.quantity === 0) {
-                    window.inventoryData.inventory = window.inventoryData.inventory.filter(i => i.id !== itemSelect);
+                    window.localData.inventory = window.localData.inventory.filter(i => i.id !== itemSelect);
                 }
                 
                 // 记录出库操作
-                window.inventoryData.records.push({
+                window.localData.records.push({
                     id: window.generateId(),
                     date: date,
                     name: itemName,
@@ -1041,7 +1041,7 @@
             }
             
             // 记录售卖信息
-            window.inventoryData.sellRecords.push({
+            window.localData.sellRecords.push({
                 id: window.generateId(),
                 date: date,
                 name: itemName,
@@ -1136,7 +1136,7 @@
         window.filterSellRecordsData = function() {
             const dateFilter = document.getElementById('sellRecordDateFilter').value;
             
-            return window.inventoryData.sellRecords.filter(record => {
+            return window.localData.sellRecords.filter(record => {
                 return dateFilter === 'all' || record.date === dateFilter;
             });
         };
@@ -1155,13 +1155,13 @@
             const restoreCheckbox = document.getElementById('restore-inventory');
             
             if (type === 'record') {
-                const record = records.find(r => r.id === id);
+                const record = window.localData.records.find(r => r.id === id);
                 modalText.textContent = `确定要删除「${record ? record.name : ''}」的${record ? record.type : ''}记录吗？`;
             } else if (type === 'sellRecord') {
-                const record = sellRecords.find(r => r.id === id);
+                const record = window.localData.sellRecords.find(r => r.id === id);
                 modalText.textContent = `确定要删除「${record ? record.name : ''}」的售卖记录吗？`;
             } else if (type === 'stock') {
-                const item = window.inventoryData.inventory.find(i => i.id === id);
+                const item = window.localData.inventory.find(i => i.id === id);
                 modalText.textContent = `确定要删除「${item ? item.name : ''}」的库存记录吗？`;
             }
             
@@ -1200,12 +1200,12 @@
         
         // 确认删除库存物品
         window.deleteStockItemConfirmed = function(id) {
-            const item = window.inventoryData.inventory.find(i => i.id === id);
+            const item = window.localData.inventory.find(i => i.id === id);
             if (item) {
-                window.inventoryData.inventory = window.inventoryData.inventory.filter(i => i.id !== id);
+                window.localData.inventory = window.localData.inventory.filter(i => i.id !== id);
                 
                 // 记录删除操作
-                window.inventoryData.records.push({
+                window.localData.records.push({
                     id: window.generateId(),
                     date: new Date().toISOString().split('T')[0],
                     name: item.name,
@@ -1227,22 +1227,22 @@
         
         // 删除记录
         window.deleteRecord = function(id) {
-            const record = window.inventoryData.records.find(r => r.id === id);
+            const record = window.localData.records.find(r => r.id === id);
             const showRestoreOption = record && (record.type === '出库' || record.type === '售卖');
             window.openDeleteModal(id, 'record', showRestoreOption);
         };
         
         // 确认删除记录
         window.deleteRecordConfirmed = function(id, restoreStock) {
-            const record = window.inventoryData.records.find(r => r.id === id);
+            const record = window.localData.records.find(r => r.id === id);
             if (record) {
                 // 如果需要恢复库存
                 if (restoreStock && (record.type === '出库' || record.type === '售卖')) {
-                    const item = window.inventoryData.inventory.find(i => i.name === record.name);
+                    const item = window.localData.inventory.find(i => i.name === record.name);
                     if (item) {
                         item.quantity += record.quantity;
                     } else {
-                        window.inventoryData.inventory.push({
+                        window.localData.inventory.push({
                             id: window.generateId(),
                             name: record.name,
                             quantity: record.quantity,
@@ -1251,7 +1251,7 @@
                     }
                 }
                 
-                window.inventoryData.records = window.inventoryData.records.filter(r => r.id !== id);
+                window.localData.records = window.localData.records.filter(r => r.id !== id);
                 
                 window.saveData();
                 window.updateAllTabs();
@@ -1264,23 +1264,23 @@
         
         // 删除售卖记录
         window.deleteSellRecord = function(id) {
-            const record = window.inventoryData.sellRecords.find(r => r.id === id);
+            const record = window.localData.sellRecords.find(r => r.id === id);
             const showRestoreOption = record && record.source === '来自库存';
             window.openDeleteModal(id, 'sellRecord', showRestoreOption);
         };
         
         // 确认删除售卖记录
         window.deleteSellRecordConfirmed = function(id, restoreStock) {
-            const record = window.inventoryData.sellRecords.find(r => r.id === id);
+            const record = window.localData.sellRecords.find(r => r.id === id);
             if (record) {
                 // 如果需要恢复库存
                 if (restoreStock && record.source === '来自库存') {
-                    const item = window.inventoryData.inventory.find(i => i.name === record.name);
+                    const item = window.localData.inventory.find(i => i.name === record.name);
                     if (item) {
                         item.quantity += record.quantity;
                     } else {
                         // 如果物品已不存在，重新创建
-                        window.inventoryData.inventory.push({
+                        window.localData.inventory.push({
                             id: window.generateId(),
                             name: record.name,
                             quantity: record.quantity,
@@ -1289,7 +1289,7 @@
                     }
                     
                     // 同时删除对应的出库记录
-                    const relatedRecordId = window.inventoryData.records.findIndex(r => 
+                    const relatedRecordId = window.localData.records.findIndex(r => 
                         r.type === '售卖' && 
                         r.name === record.name && 
                         r.date === record.date &&
@@ -1297,11 +1297,11 @@
                     );
                     
                     if (relatedRecordId !== -1) {
-                        window.inventoryData.records.splice(relatedRecordId, 1);
+                        window.localData.records.splice(relatedRecordId, 1);
                     }
                 }
                 
-                window.inventoryData.sellRecords = window.inventoryData.sellRecords.filter(r => r.id !== id);
+                window.localData.sellRecords = window.localData.sellRecords.filter(r => r.id !== id);
                 
                 window.saveData();
                 window.updateAllTabs();
@@ -1316,7 +1316,7 @@
 
         // 编辑库存
         window.editStock = function(id) {
-            const item = window.inventoryData.inventory.find(i => i.id === id);
+            const item = window.localData.inventory.find(i => i.id === id);
             if (item) {
                 currentEditId = id;
                 document.getElementById('editItemName').value = item.name;
@@ -1347,7 +1347,7 @@
                 return;
             }
             
-            const item = window.inventoryData.inventory.find(i => i.id === currentEditId);
+            const item = window.localData.inventory.find(i => i.id === currentEditId);
             if (item) {
                 const oldQuantity = item.quantity;
                 const oldPrice = item.price;
@@ -1359,7 +1359,7 @@
                 // 记录编辑操作
                 const quantityDiff = quantity - oldQuantity;
                 if (quantityDiff !== 0 || price !== oldPrice) {
-                    window.inventoryData.records.push({
+                    window.localData.records.push({
                         id: window.generateId(),
                         date: new Date().toISOString().split('T')[0],
                         name: item.name,
@@ -1382,7 +1382,7 @@
         
         // 编辑售卖记录
         window.editSellRecord = function(id) {
-            const record = window.inventoryData.sellRecords.find(r => r.id === id);
+            const record = window.localData.sellRecords.find(r => r.id === id);
             if (record) {
                 currentEditId = id;
                 document.getElementById('editSellOriginalPrice').value = record.originalPrice ? record.originalPrice.toFixed(2) : '0.00';
@@ -1412,7 +1412,7 @@
                 return;
             }
             
-            const record = window.inventoryData.sellRecords.find(r => r.id === currentEditId);
+            const record = window.localData.sellRecords.find(r => r.id === currentEditId);
             if (record) {
                 record.originalPrice = originalPrice;
                 record.sellPrice = sellPrice;
@@ -1430,7 +1430,7 @@
         // 导出数据
         window.exportData = function() {
             try {
-                const dataStr = JSON.stringify(window.inventoryData, null, 2);
+                const dataStr = JSON.stringify(window.localData, null, 2);
                 const dataBlob = new Blob([dataStr], { type: 'application/json' });
                 
                 // 创建下载链接
@@ -1474,9 +1474,9 @@
                         data.records && Array.isArray(data.records) &&
                         data.sellRecords && Array.isArray(data.sellRecords)) {
                         
-                        window.inventoryData.inventory = data.inventory;
-                        window.inventoryData.records = data.records;
-                        window.inventoryData.sellRecords = data.sellRecords;
+                        window.localData.inventory = data.inventory;
+                        window.localData.records = data.records;
+                        window.localData.sellRecords = data.sellRecords;
                         
                         window.saveData();
                         window.updateAllTabs();
@@ -1521,7 +1521,7 @@
         //             }
                     
         //             // 合并数据
-        //             window.inventoryData = importedData;
+        //             window.localData = importedData;
                     
         //             // 保存并更新界面
         //             window.saveData();
