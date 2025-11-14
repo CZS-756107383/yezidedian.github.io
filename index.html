@@ -63,50 +63,10 @@
             padding: 15px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
-            /* 添加以下属性实现横向滚动 */
-            overflow-x: auto;
-            white-space: nowrap;
-            /* 确保内容不会被裁剪 */
-            min-width: 100%;
-            box-sizing: border-box;
         }
-
+        
         .tab-content.active {
             display: block;
-        }
-
-        /* 优化滚动条样式 */
-        .tab-content::-webkit-scrollbar {
-            height: 6px;
-        }
-
-        .tab-content::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 3px;
-        }
-
-        .tab-content::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 3px;
-        }
-
-        .tab-content::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
-
-        /* 为移动设备优化触摸体验 */
-        @media (max-width: 768px) {
-            .tab-content {
-                padding: 10px;
-                -webkit-overflow-scrolling: touch; /* 启用平滑滚动 */
-            }
-            
-            /* 确保内部元素在需要时能够正确换行 */
-            .tab-content > * {
-                white-space: normal;
-                display: inline-block;
-                min-width: 100%;
-            }
         }
         
         .form-group {
@@ -252,12 +212,45 @@
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
-            flex-wrap: wrap;
+            /* 移除flex-wrap，改为水平滚动 */
+            overflow-x: auto;
+            /* 确保内容不换行 */
+            white-space: nowrap;
+            /* 增加内边距，提升滑动体验 */
+            padding: 5px 0;
+            /* 隐藏滚动条但保留功能 */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
-        
+
+        /* 为WebKit浏览器隐藏滚动条 */
+        .filter-group::-webkit-scrollbar {
+            display: none;
+        }
+
         .filter-group select {
-            flex: 1;
+            /* 保持原有最小宽度 */
             min-width: 150px;
+            /* 确保在小屏幕上选择框不会被压缩 */
+            width: auto;
+            /* 提升触摸体验 */
+            padding: 8px;
+            /* 适应不同尺寸屏幕 */
+            font-size: 14px;
+        }
+
+        /* 针对移动设备的优化 */
+        @media (max-width: 768px) {
+            .filter-group select {
+                min-width: 120px;
+                font-size: 13px;
+            }
+        }
+
+        /* 确保容器不会被内容撑破 */
+        .filter-group-container {
+            width: 100%;
+            overflow: hidden;
         }
         
         .toast {
