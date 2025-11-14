@@ -419,6 +419,16 @@
         <!-- 当前库存 -->
         <div id="currentStock" class="tab-content active">
             <div class="message" id="currentStockMessage"></div>
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalItems">0</div>
+                    <div class="stat-label">库存物品总数:</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalValue">¥0.00</div>
+                    <div class="stat-label">库存总价值: ¥</div>
+                </div>
+            </div>
             <div class="form-group">
                 <label for="currentStockItemName">名称</label>
                 <select id="currentStockItemName" oninput="window.updateStockTable()">
@@ -510,12 +520,10 @@
                 <table class="responsive-table">
                     <thead>
                         <tr>
-                            <th>日期</th>
                             <th>名称</th>
                             <th>类型</th>
                             <th>数量</th>
                             <th>单价</th>
-                            <th>总价</th>
                             <th>备注</th>
                             <th>操作时间</th>
                             <th>操作</th>
@@ -545,12 +553,12 @@
             </div>
             <div class="form-group">
                 <label for="sellQuantity">销售数量</label>
-                <input type="number" id="sellQuantity" min="1" placeholder="请输入销售数量" required>
+                <input type="number" id="sellQuantity" min="1" value="1" placeholder="请输入销售数量" required>
                 <div id="sellQuantityError" class="error"></div>
             </div>
             <div class="form-group">
                 <label for="sellOriginalPrice">商品原价</label>
-                <input type="number" id="sellOriginalPrice" min="0" step="0.01" placeholder="请输入商品原价" required>
+                <input type="number" id="sellOriginalPrice" min="0" step="0.01" value="0" placeholder="请输入商品原价" required>
             </div>
             <div class="form-group">
                 <label for="sellPrice">售价</label>
@@ -594,13 +602,13 @@
                 <table class="responsive-table">
                     <thead>
                         <tr>
-                            <th>日期</th>
                             <th>名称</th>
                             <th>数量</th>
                             <th>原价</th>
                             <th>售价</th>
-                            <th>总价</th>
+                            <th>盈利</th>
                             <th>来源</th>
+                            <th>售卖时间</th>
                             <th>操作</th>
                         </tr>
                     </thead>
@@ -873,11 +881,18 @@
             }
 
             const itemId = document.getElementById('currentStockItemName').value;
+
+            let totalItems = 0;
+            let totalValue = 0;
             
             window.localData.inventory.forEach(item => {
                 if (!itemId || itemId && item.id === itemId) {
                     const tr = document.createElement('tr');
                     const totalPrice = (item.quantity * item.price || 0).toFixed(2);
+
+                    const total = item.quantity * item.price || 0;
+                    totalItems += item.quantity;
+                    totalValue += total;
                     
                     tr.innerHTML = `
                         <td>${item.name}</td>
@@ -893,6 +908,10 @@
                     tbody.appendChild(tr);
                 }
             });
+
+            // 更新统计信息
+            document.getElementById('totalItems').textContent = totalItems;
+            document.getElementById('totalValue').textContent = totalValue.toFixed(2);
         };
 // ------------------------------------------------------------- 物品库存相关 -----------------------------------------------------------------]]end         
 
@@ -915,12 +934,10 @@
             filteredRecords.forEach(record => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${record.date}</td>
                     <td>${record.name}</td>
                     <td>${record.type}</td>
                     <td>${record.quantity}</td>
                     <td>¥${record.price ? record.price.toFixed(2) : '0.00'}</td>
-                    <td>¥${record.totalPrice || '0.00'}</td>
                     <td>${record.remark || '-'}</td>
                     <td>${record.time}</td>
                     <td class="actions">
@@ -1140,14 +1157,14 @@
             const sellPrice = parseFloat(document.getElementById('sellPrice').value);
             const date = document.getElementById('sellDate').value;
             
-            if (isNaN(originalPrice) || originalPrice < 0) {
-                originalPrice.value = 0; // 原价默认0
-            }
+            // if (isNaN(originalPrice) || originalPrice < 0) {
+            //     originalPrice.value = 0; // 原价默认0
+            // }
             
-            if (isNaN(quantity) || quantity <= 0) {
-                window.showMessage('sell', '请输入有效的售卖数量', false);
-                return;
-            }
+            // if (isNaN(quantity) || quantity <= 0) {
+            //     quantity = 1; // 数量默认1
+            // }
+
             if (isNaN(sellPrice) || sellPrice < 0) {
                 window.showMessage('sell', '请输入有效的售价', false);
                 return;
@@ -1208,7 +1225,7 @@
                 quantity: quantity,
                 originalPrice: originalPrice,
                 sellPrice: sellPrice,
-                totalPrice: (quantity * sellPrice).toFixed(2),
+                totalPrice: (sellPrice - originalPrice).toFixed(2),
                 source: isFromInventory ? '来自库存' : '手动输入',
                 inventoryId: isFromInventory ? itemSelect : null,
                 time: new Date().toLocaleString()
@@ -1246,13 +1263,13 @@
             filteredRecords.forEach(record => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${record.date}</td>
                     <td>${record.name}</td>
                     <td>${record.quantity}</td>
                     <td>¥${record.originalPrice ? record.originalPrice.toFixed(2) : '0.00'}</td>
                     <td>¥${record.sellPrice ? record.sellPrice.toFixed(2) : '0.00'}</td>
                     <td>¥${record.totalPrice || '0.00'}</td>
                     <td>${record.source}</td>
+                    <td>${record.date}</td>
                     <td class="actions">
                         <button class="btn-sm" onclick="editSellRecord('${record.id}')">编辑</button>
                         <button class="btn-sm btn-danger" onclick="deleteSellRecord('${record.id}')">删除</button>
@@ -1547,7 +1564,7 @@
                         type: '库存操作',
                         quantity: Math.abs(quantityDiff),
                         price: price,
-                        totalPrice: ((price - oldPrice) * quantity).toFixed(2),
+                        // totalPrice: ((price - oldPrice) * quantity).toFixed(2),
                         remark: quantityDiff > 0 ? '增加库存' : quantityDiff < 0 ? '减少库存' : '修改单价',
                         time: new Date().toLocaleString()
                     });
@@ -1597,7 +1614,7 @@
             if (record) {
                 record.originalPrice = originalPrice;
                 record.sellPrice = sellPrice;
-                record.totalPrice = (record.quantity * sellPrice).toFixed(2);
+                record.totalPrice = (sellPrice - originalPrice).toFixed(2);
                 
                 window.saveData();
                 window.updateSellRecordsTable();
