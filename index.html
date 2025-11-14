@@ -569,8 +569,10 @@
             
             <h3 style="margin-top: 30px;">数据导入</h3>
             <div class="form-group">
-                <label for="importFile">选择JSON文件</label>
-                <input type="file" id="importFile" accept=".json">
+                <label for="importFile">选择JSON文件（支持从微信聊天获取）</label>
+                <input type="file" id="importFile" accept=".json" style="display: none;">
+                <button onclick="document.getElementById('importFile').click()" class="btn-primary" style="width: 100%; margin-top: 5px;">点击选择文件</button>
+                <div class="help-text" style="font-size: 12px; color: #666; margin-top: 5px;">提示：在微信中打开时，可以从聊天记录中选择JSON文件</div>
             </div>
             <button onclick="window.importData()" class="btn-success">导入数据</button>
         </div>
@@ -1572,13 +1574,21 @@
         // 导入数据 会覆盖原先的数据
         window.importData = function() {
             const fileInput = document.getElementById('importFile');
+
             if (!fileInput.files || fileInput.files.length === 0) {
                 window.showToast('请选择要导入的文件', 'error');
                 return;
             }
             
             const file = fileInput.files[0];
-            const reader = new FileReader();
+            
+            // 检查文件类型
+            if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
+                window.showToast('请选择JSON格式的文件', 'error');
+                return;
+            }
+            
+            var reader = new FileReader();
             
             reader.onload = function(e) {
                 try {
