@@ -556,17 +556,18 @@
         </div>
         
         <!-- 数据同步 -->
-        <div id="sync" class="tab-content">
-            <div class="message" id="syncMessage"></div>
-            <h3>数据导出</h3>
-            <button onclick="window.exportData()" class="btn-success">导出数据</button>
+        <div id="sync" class="tab-content"> 
+            <div class="message" id="syncMessage"></div> 
+            <h3>数据导出</h3> 
+            <button onclick="window.exportData()" class="btn-success">导出数据</button> 
             
-            <h3 style="margin-top: 30px;">数据导入</h3>
-            <div class="form-group">
-                <label for="importFile">选择JSON文件</label>
-                <input type="file" id="importFile" accept=".json">
-            </div>
-            <button onclick="window.importData()" class="btn-success">导入数据</button>
+            <h3 style="margin-top: 30px;">数据导入</h3> 
+            <div class="form-group"> 
+                <label for="importFile">选择JSON文件</label> 
+                <input type="file" id="importFile" accept=".json"> 
+                <small class="help-text">提示：可从微信聊天中获取JSON文件后选择</small> 
+            </div> 
+            <button onclick="window.importData()" class="btn-success">导入数据</button> 
         </div>
     </div>
     
@@ -1566,12 +1567,17 @@
         // 导入数据 会覆盖原先的数据
         window.importData = function() {
             const fileInput = document.getElementById('importFile');
-            if (!fileInput.files || fileInput.files.length === 0) {
-                window.showToast('请选择要导入的文件', 'error');
+            if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                showToastMessage('请先选择JSON文件');
                 return;
             }
             
             const file = fileInput.files[0];
+            if (file.type && file.type !== 'application/json' && !file.name.endsWith('.json')) {
+                showToastMessage('请选择有效的JSON文件');
+                return;
+            }
+                
             const reader = new FileReader();
             
             reader.onload = function(e) {
