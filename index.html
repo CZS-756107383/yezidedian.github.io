@@ -914,12 +914,10 @@
                 window.showMessage('stockIn', '请输入有效的单价', false);
                 return;
             }
-            window.showMessage('stockIn', '物品入库成功11111');
             
             // 检查是否已存在该物品
             const existingItem = window.localData.inventory.find(item => item.name === name);
             if (existingItem) {
-                window.showMessage('stockIn', '物品入库成功22222');
                 // 更新现有物品库存
                 const oldQuantity = existingItem.quantity;
                 const oldPrice = existingItem.price;
@@ -929,7 +927,6 @@
                 const totalCost = (oldQuantity * oldPrice) + (quantity * price);
                 existingItem.price = totalCost / existingItem.quantity;
             } else {
-                window.showMessage('stockIn', '物品入库成功33333');
                 // 添加新物品
                 window.localData.inventory.push({
                     id: window.generateId(),
@@ -938,7 +935,6 @@
                     price: price
                 });
             }
-            window.showMessage('stockIn', '物品入库成功444444');
             // 记录入库操作
             window.localData.records.push({
                 id: window.generateId(),
@@ -951,17 +947,15 @@
                 remark: '',
                 time: new Date().toLocaleString()
             });
-            window.showMessage('stockIn', '物品入库成功55555');
             window.saveData();
             window.updateAllTabs();
-            window.showMessage('stockIn', '物品入库成功6666');
             // 重置表单
             document.getElementById('stockInItemName').value = '';
             document.getElementById('stockInQuantity').value = '';
             document.getElementById('stockInPrice').value = '';
             
             // 显示成功消息
-            window.showMessage('stockIn', '物品入库成功');
+            window.showToast('物品入库成功');
         };
 // ------------------------------------------------------------- 物品入库相关 -----------------------------------------------------------------]]end   
 
@@ -1037,7 +1031,7 @@
             document.getElementById('stockOutQuantity').value = '';
                 
             // 显示成功消息
-            window.showMessage('stockOut', '出库成功');
+            window.showToast('出库成功');
         };
 // ------------------------------------------------------------- 物品出库相关 -----------------------------------------------------------------]]end   
         
@@ -1171,7 +1165,7 @@
             document.getElementById('sellPrice').value = '';
             
             // 显示成功消息
-            window.showMessage('sell', '物品售卖成功');
+            window.showToast('物品售卖成功');
         };
 // ------------------------------------------------------------- 物品售卖相关 -----------------------------------------------------------------]]end   
         
