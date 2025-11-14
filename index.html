@@ -174,38 +174,86 @@
         
         .stats-container {
             display: flex;
-            flex-wrap: wrap;
+            /* 移除flex-wrap: wrap */
             justify-content: space-between;
             margin-bottom: 20px;
             padding: 15px;
             background-color: #fafafa;
             border-radius: 4px;
-            /* 移除overflow-x: auto和white-space: nowrap */
+            /* 确保不出现滚动条 */
+            overflow-x: hidden;
+            /* 防止内容溢出容器 */
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .stat-card {
-            display: inline-flex;
+            display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 8px 10px;
-            margin: 0 2px 8px 2px;
+            padding: 6px 8px;
+            margin: 0 2px;
             text-align: center;
-            min-width: 23%; /* 根据手机屏幕调整，确保4个卡片可以在一行显示 */
+            /* 使用flex: 1确保卡片自动填充容器空间 */
+            flex: 1;
+            /* 设置固定宽度比最小宽度更好地控制 */
+            width: 25%;
+            max-width: 25%;
             box-sizing: border-box;
         }
 
         .stat-value {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             color: #1976d2;
             margin-bottom: 2px;
+            /* 确保文本不换行 */
+            white-space: nowrap;
+            /* 限制最大宽度并显示省略号 */
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .stat-label {
-            font-size: 12px;
+            font-size: 11px;
             color: #666;
-            /* 可选：自动换行以适应小屏幕 */
-            word-wrap: break-word;
+            /* 确保标签也能适应小空间 */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        /* 针对小屏幕设备的额外优化 */
+        @media (max-width: 480px) {
+            .stat-card {
+                padding: 4px 6px;
+                margin: 0 1px;
+            }
+            
+            .stat-value {
+                font-size: 12px;
+            }
+            
+            .stat-label {
+                font-size: 10px;
+            }
+        }
+
+        /* 针对非常小的屏幕（如小型手机） */
+        @media (max-width: 360px) {
+            .stat-card {
+                padding: 2px 4px;
+            }
+            
+            .stat-value {
+                font-size: 11px;
+            }
+            
+            .stat-label {
+                font-size: 9px;
+            }
         }
         
         .filter-group {
@@ -378,20 +426,22 @@
                 </select>
                 <div id="currentStockItemNameError" class="error"></div>
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>名称</th>
-                        <th>库存数量</th>
-                        <th>单价</th>
-                        <th>总价</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody id="stockTableBody">
-                    <!-- 库存数据将通过JS动态生成 -->
-                </tbody>
-            </table>
+            <div class="table-container">
+                <table class="responsive-table">
+                    <thead>
+                        <tr>
+                            <th>名称</th>
+                            <th>库存数量</th>
+                            <th>单价</th>
+                            <th>总价</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stockTableBody">
+                        <!-- 记录数据将通过JS动态生成 -->
+                    </tbody>
+                </table>
+            </div>
         </div>
         
         <!-- 物品入库 -->
@@ -1235,6 +1285,20 @@
             document.getElementById('totalOriginalPrice').textContent = `¥${totalOriginalPrice.toFixed(2)}`;
             document.getElementById('totalSales').textContent = `¥${totalSales.toFixed(2)}`;
             document.getElementById('totalProfit').textContent = `¥${totalProfit.toFixed(2)}`;
+            // 根据盈利或亏损设置不同颜色
+            if (totalProfit > 0) {
+                // 盈利时显示绿色
+                document.getElementById('totalProfit').style.color = '#4caf50'; // 绿色
+                document.getElementById('totalProfit').style.fontWeight = 'bold';
+            } else if (totalProfit < 0) {
+                // 亏损时显示红色
+                document.getElementById('totalProfit').style.color = '#f44336'; // 红色
+                document.getElementById('totalProfit').style.fontWeight = 'bold';
+            } else {
+                // 盈亏平衡时保持默认颜色
+                document.getElementById('totalProfit').style.color = '#1976d2'; // 默认蓝色
+                document.getElementById('totalProfit').style.fontWeight = 'bold';
+            }
         };
         
         // 筛选售卖记录
