@@ -557,10 +557,44 @@
         
         // 初始化页面
         window.addEventListener('load', function() {
-            window.initDateInputs();
             window.loadData();
+            window.initDateInputs();
             window.updateAllTabs();
         });
+
+        // 从localStorage加载数据
+        window.loadData = function() {
+            try {
+                const inventoryData = localStorage.getItem('inventory');        // 当前库存数据
+                const recordsData = localStorage.getItem('records');            // 出入库记录数据
+                const sellRecordsData = localStorage.getItem('sellRecords');    // 售卖记录数据
+                
+                inventory = inventoryData ? JSON.parse(inventoryData) : [];
+                records = recordsData ? JSON.parse(recordsData) : [];
+                sellRecords = sellRecordsData ? JSON.parse(sellRecordsData) : [];
+                
+                // 确保数据类型正确
+                if (!Array.isArray(inventory)) inventory = [];
+                if (!Array.isArray(records)) records = [];
+                if (!Array.isArray(sellRecords)) sellRecords = [];
+            } catch (error) {
+                window.showToast('数据加载失败，将使用空数据', 'error');
+                inventory = [];
+                records = [];
+                sellRecords = [];
+            }
+        };
+        
+        // 保存数据到localStorage
+        window.saveData = function() {
+            try {
+                localStorage.setItem('inventory', JSON.stringify(inventory));
+                localStorage.setItem('records', JSON.stringify(records));
+                localStorage.setItem('sellRecords', JSON.stringify(sellRecords));
+            } catch (error) {
+                window.showToast('数据保存失败', 'error');
+            }
+        };
         
         // 初始化日期输入框
         window.initDateInputs = function() {
@@ -652,73 +686,6 @@
                 messageElement.className = 'message';
             }, 3000);
         }
-
-        window.showToastMessage = function(message) {
-            const toast = document.getElementById('toast');
-            if (toast) {
-                toast.textContent = message;
-                toast.style.display = 'block';
-                setTimeout(() => {
-                    toast.style.display = 'none';
-                }, 2000);
-            } else {
-                // 如果没有toast元素，创建一个
-                const newToast = document.createElement('div');
-                newToast.id = 'toast';
-                newToast.className = 'toast';
-                newToast.textContent = message;
-                newToast.style.cssText = `
-                    position: fixed;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    background-color: rgba(0, 0, 0, 0.7);
-                    color: white;
-                    padding: 10px 20px;
-                    border-radius: 5px;
-                    z-index: 1000;
-                    text-align: center;
-                `;
-                document.body.appendChild(newToast);
-                setTimeout(() => {
-                    newToast.style.display = 'none';
-                }, 2000);
-            }
-        }
-        
-        // 从localStorage加载数据
-        window.loadData = function() {
-            try {
-                const inventoryData = localStorage.getItem('inventory');        // 当前库存数据
-                const recordsData = localStorage.getItem('records');            // 出入库记录数据
-                const sellRecordsData = localStorage.getItem('sellRecords');    // 售卖记录数据
-                
-                inventory = inventoryData ? JSON.parse(inventoryData) : [];
-                records = recordsData ? JSON.parse(recordsData) : [];
-                sellRecords = sellRecordsData ? JSON.parse(sellRecordsData) : [];
-                
-                // 确保数据类型正确
-                if (!Array.isArray(inventory)) inventory = [];
-                if (!Array.isArray(records)) records = [];
-                if (!Array.isArray(sellRecords)) sellRecords = [];
-            } catch (error) {
-                window.showToast('数据加载失败，将使用空数据', 'error');
-                inventory = [];
-                records = [];
-                sellRecords = [];
-            }
-        };
-        
-        // 保存数据到localStorage
-        window.saveData = function() {
-            try {
-                localStorage.setItem('inventory', JSON.stringify(inventory));
-                localStorage.setItem('records', JSON.stringify(records));
-                localStorage.setItem('sellRecords', JSON.stringify(sellRecords));
-            } catch (error) {
-                window.showToast('数据保存失败', 'error');
-            }
-        };
 
         // 更新日期筛选器
         window.updateDateFilter = function(filterId) {
@@ -839,8 +806,7 @@
             const date = document.getElementById('stockInDate').value;
             
             if (!name) {
-                window.showMessage('stockIn', '请输入名称3333', false);
-                window.showToast('请输入名称4444');
+                window.showMessage('stockIn', '请输入名称', false);
                 return;
             }
             
@@ -856,8 +822,9 @@
             
             // 检查是否已存在该物品
             const existingItem = inventory.find(item => item.name === name);
-            
+            window.showMessage('stockIn', '物品入库成功11111');
             if (existingItem) {
+                window.showMessage('stockIn', '物品入库成功22222');
                 // 更新现有物品库存
                 const oldQuantity = existingItem.quantity;
                 const oldPrice = existingItem.price;
@@ -867,6 +834,7 @@
                 const totalCost = (oldQuantity * oldPrice) + (quantity * price);
                 existingItem.price = totalCost / existingItem.quantity;
             } else {
+                window.showMessage('stockIn', '物品入库成功33333');
                 // 添加新物品
                 inventory.push({
                     id: generateId(),
@@ -875,7 +843,7 @@
                     price: price
                 });
             }
-            
+            window.showMessage('stockIn', '物品入库成功444444');
             // 记录入库操作
             records.push({
                 id: generateId(),
@@ -888,10 +856,10 @@
                 remark: '',
                 time: new Date().toLocaleString()
             });
-            
+            window.showMessage('stockIn', '物品入库成功55555');
             window.saveData();
             window.updateAllTabs();
-            
+            window.showMessage('stockIn', '物品入库成功6666');
             // 重置表单
             document.getElementById('stockInItemName').value = '';
             document.getElementById('stockInQuantity').value = '';
