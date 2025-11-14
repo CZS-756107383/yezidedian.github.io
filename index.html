@@ -212,45 +212,12 @@
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
-            /* 移除flex-wrap，改为水平滚动 */
-            overflow-x: auto;
-            /* 确保内容不换行 */
-            white-space: nowrap;
-            /* 增加内边距，提升滑动体验 */
-            padding: 5px 0;
-            /* 隐藏滚动条但保留功能 */
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+            flex-wrap: wrap;
         }
-
-        /* 为WebKit浏览器隐藏滚动条 */
-        .filter-group::-webkit-scrollbar {
-            display: none;
-        }
-
+        
         .filter-group select {
-            /* 保持原有最小宽度 */
+            flex: 1;
             min-width: 150px;
-            /* 确保在小屏幕上选择框不会被压缩 */
-            width: auto;
-            /* 提升触摸体验 */
-            padding: 8px;
-            /* 适应不同尺寸屏幕 */
-            font-size: 14px;
-        }
-
-        /* 针对移动设备的优化 */
-        @media (max-width: 768px) {
-            .filter-group select {
-                min-width: 120px;
-                font-size: 13px;
-            }
-        }
-
-        /* 确保容器不会被内容撑破 */
-        .filter-group-container {
-            width: 100%;
-            overflow: hidden;
         }
         
         .toast {
@@ -299,6 +266,81 @@
             gap: 10px;
             justify-content: flex-end;
         }
+
+        /* 添加以下CSS样式 */
+        .table-container {
+            /* 关键属性：允许水平滚动 */
+            overflow-x: auto;
+            /* 确保容器不会被内容撑破 */
+            width: 100%;
+            /* 添加内边距，让滚动条有足够的空间 */
+            padding: 5px 0;
+            /* 隐藏滚动条但保留功能（可选） */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* 为WebKit浏览器隐藏滚动条（可选） */
+        .table-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* 优化表格样式 */
+        .responsive-table {
+            /* 确保表格不会自动调整列宽 */
+            table-layout: fixed;
+            /* 保持表格的最小宽度 */
+            min-width: 100%;
+            /* 移除表格边框之间的间距 */
+            border-collapse: collapse;
+        }
+
+        /* 优化表格头部 */
+        .responsive-table th {
+            /* 设置固定宽度 */
+            min-width: 80px;
+            /* 让内容能够自动换行 */
+            word-wrap: break-word;
+            /* 固定表头（可选） */
+            position: sticky;
+            top: 0;
+            background-color: #f8f9fa;
+            z-index: 10;
+            /* 适应移动设备的字体大小 */
+            font-size: 14px;
+            /* 单元格内边距优化 */
+            padding: 8px 5px;
+        }
+
+        /* 优化表格内容单元格 */
+        .responsive-table td {
+            /* 让内容能够自动换行 */
+            word-wrap: break-word;
+            /* 适应移动设备的字体大小 */
+            font-size: 13px;
+            /* 单元格内边距优化 */
+            padding: 8px 5px;
+        }
+
+        /* 操作列特殊处理 */
+        .responsive-table th:last-child,
+        .responsive-table td:last-child {
+            /* 操作列可以稍宽一些 */
+            min-width: 100px;
+        }
+
+        /* 针对小屏幕的额外优化 */
+        @media (max-width: 480px) {
+            .responsive-table th {
+                font-size: 12px;
+                padding: 6px 3px;
+            }
+            
+            .responsive-table td {
+                font-size: 11px;
+                padding: 6px 3px;
+            }
+        }
         
     </style>
 </head>
@@ -323,6 +365,13 @@
         <!-- 当前库存 -->
         <div id="currentStock" class="tab-content active">
             <div class="message" id="currentStockMessage"></div>
+            <div class="form-group">
+                <label for="currentStockItemName">名称</label>
+                <select id="currentStockItemName" oninput="window.updateStockTable()">
+                    <option value="">显示全部库存</option>
+                </select>
+                <div id="currentStockItemNameError" class="error"></div>
+            </div>
             <table>
                 <thead>
                     <tr>
@@ -401,38 +450,40 @@
                     <option value="售卖">售卖</option>
                 </select>
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>日期</th>
-                        <th>名称</th>
-                        <th>类型</th>
-                        <th>数量</th>
-                        <th>单价</th>
-                        <th>总价</th>
-                        <th>备注</th>
-                        <th>操作时间</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody id="recordsTableBody">
-                    <!-- 记录数据将通过JS动态生成 -->
-                </tbody>
-            </table>
+            <div class="table-container">
+                <table class="responsive-table">
+                    <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>名称</th>
+                            <th>类型</th>
+                            <th>数量</th>
+                            <th>单价</th>
+                            <th>总价</th>
+                            <th>备注</th>
+                            <th>操作时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recordsTableBody">
+                        <!-- 记录数据将通过JS动态生成 -->
+                    </tbody>
+                </table>
+            </div>
         </div>
         
         <!-- 物品售卖 -->
         <div id="sell" class="tab-content">
             <div class="message" id="sellMessage"></div>
             <div class="form-group">
-                <label for="sellItemSelect">选择库存物品（可选）</label>
+                <label for="sellItemSelect">从库存选择物品（可选）</label>
                 <select id="sellItemSelect">
-                    <option value="">请选择物品</option>
+                    <option value="">请选择库存物品</option>
                 </select>
                 <div id="sellItemSelectError" class="error"></div>
             </div>
             <div class="form-group">
-                <label for="sellItemName">名称</label>
+                <label for="sellItemName">物品名称（如不选择库存物品，请手动输入）</label>
                 <input type="text" id="sellItemName" placeholder="请输入名称">
                 <div id="sellItemNameError" class="error"></div>
             </div>
@@ -483,23 +534,25 @@
                     <option value="all">所有日期</option>
                 </select>
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>日期</th>
-                        <th>名称</th>
-                        <th>数量</th>
-                        <th>原价</th>
-                        <th>售价</th>
-                        <th>总价</th>
-                        <th>来源</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody id="sellRecordsTableBody">
-                    <!-- 售卖记录将通过JS动态生成 -->
-                </tbody>
-            </table>
+            <div class="table-container">
+                <table class="responsive-table">
+                    <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>名称</th>
+                            <th>数量</th>
+                            <th>原价</th>
+                            <th>售价</th>
+                            <th>总价</th>
+                            <th>来源</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sellRecordsTableBody">
+                        <!-- 售卖记录将通过JS动态生成 -->
+                    </tbody>
+                </table>
+            </div>
         </div>
         
         <!-- 数据同步 -->
@@ -542,7 +595,7 @@
             <h3>编辑库存</h3>
             <div class="form-group">
                 <label for="editItemName">名称</label>
-                <input type="text" id="editItemName" readonly>
+                <input type="text" id="editItemName" required>
             </div>
             <div class="form-group">
                 <label for="editQuantity">数量</label>
@@ -650,6 +703,7 @@
         window.updateTabData = function(tabId) {
             switch(tabId) {
                 case 'currentStock':
+                    window.updateStockOptions();
                     window.updateStockTable();
                     break;
                 case 'stockOut':
@@ -673,6 +727,7 @@
         
         // 更新所有标签页数据
         window.updateAllTabs = function() {
+            window.updateStockOptions();
             window.updateStockTable();
             window.updateStockOutOptions();
             window.updateSellOptions();
@@ -733,7 +788,22 @@
         
         
 
-// ------------------------------------------------------------- 物品库存相关 -----------------------------------------------------------------[[star              
+// ------------------------------------------------------------- 物品库存相关 -----------------------------------------------------------------[[star 
+        // 更新库存物品选项
+        window.updateStockOptions = function() {
+            const currentStockItemName = document.getElementById('currentStockItemName');
+            
+            // 清空下拉列表
+            currentStockItemName.innerHTML = '<option value="">显示全部库存</option>';
+            
+            
+            window.localData.inventory.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = `${item.name} (库存: ${item.quantity}, 单价: ¥${item.price ? item.price.toFixed(2) : '0.00'})`;
+                currentStockItemName.appendChild(option);
+            });
+        };              
         // 更新库存表格
         window.updateStockTable = function() {
             const tbody = document.getElementById('stockTableBody');
@@ -743,26 +813,32 @@
                 tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">暂无库存数据</td></tr>';
                 return;
             }
+
+            const itemId = document.getElementById('currentStockItemName').value;
             
             window.localData.inventory.forEach(item => {
-                const tr = document.createElement('tr');
-                const totalPrice = (item.quantity * item.price || 0).toFixed(2);
-                
-                tr.innerHTML = `
-                    <td>${item.name}</td>
-                    <td>${item.quantity}</td>
-                    <td>¥${item.price ? item.price.toFixed(2) : '0.00'}</td>
-                    <td>¥${totalPrice}</td>
-                    <td class="actions">
-                        <button class="btn-sm" onclick="editStock('${item.id}')">编辑</button>
-                        <button class="btn-sm btn-danger" onclick="deleteStockItem('${item.id}')">删除</button>
-                    </td>
-                `;
-                
-                tbody.appendChild(tr);
+                if (!itemId || itemId && item.id === itemId) {
+                    const tr = document.createElement('tr');
+                    const totalPrice = (item.quantity * item.price || 0).toFixed(2);
+                    
+                    tr.innerHTML = `
+                        <td>${item.name}</td>
+                        <td>${item.quantity}</td>
+                        <td>¥${item.price ? item.price.toFixed(2) : '0.00'}</td>
+                        <td>¥${totalPrice}</td>
+                        <td class="actions">
+                            <button class="btn-sm" onclick="editStock('${item.id}')">编辑</button>
+                            <button class="btn-sm btn-danger" onclick="deleteStockItem('${item.id}')">删除</button>
+                        </td>
+                    `;
+                    
+                    tbody.appendChild(tr);
+                }
             });
         };
+// ------------------------------------------------------------- 物品库存相关 -----------------------------------------------------------------]]end         
 
+// ------------------------------------------------------------- 出入库记录相关 -----------------------------------------------------------------[[star              
         // 更新出入库记录表格
         window.updateRecordsTable = function() {
             const tbody = document.getElementById('recordsTableBody');
@@ -813,7 +889,7 @@
                 return dateMatch && typeMatch;
             });
         };
-// ------------------------------------------------------------- 物品库存相关 -----------------------------------------------------------------]]end         
+// ------------------------------------------------------------- 出入库记录相关 -----------------------------------------------------------------]]end         
               
         
 // ------------------------------------------------------------- 物品入库相关 -----------------------------------------------------------------[[star         
@@ -936,10 +1012,10 @@
             // 更新库存
             item.quantity -= quantity;
             
-            // 如果库存为0，移除该物品
-            if (item.quantity === 0) {
-                window.localData.inventory = window.localData.inventory.filter(i => i.id !== itemId);
-            }
+            // // 如果库存为0，移除该物品
+            // if (item.quantity === 0) {
+            //     window.localData.inventory = window.localData.inventory.filter(i => i.id !== itemId);
+            // }
             
             // 记录出库操作
             window.localData.records.push({
@@ -1016,7 +1092,6 @@
                 originalPrice.value = 0; // 原价默认0
             }
             
-            
             if (isNaN(quantity) || quantity <= 0) {
                 window.showMessage('sell', '请输入有效的售卖数量', false);
                 return;
@@ -1027,8 +1102,8 @@
             }
             
             let itemName = '';
-            const isFromInventory = itemSelect !== '';
-            
+            const isFromInventory = itemSelect !== '';  
+
             if (isFromInventory) {
                 // 从库存中销售
                 const item = window.localData.inventory.find(i => i.id === itemSelect);
@@ -1047,10 +1122,10 @@
                 // 更新库存
                 item.quantity -= quantity;
                 
-                // 如果库存为0，移除该物品
-                if (item.quantity === 0) {
-                    window.localData.inventory = window.localData.inventory.filter(i => i.id !== itemSelect);
-                }
+                // // 如果库存为0，移除该物品
+                // if (item.quantity === 0) {
+                //     window.localData.inventory = window.localData.inventory.filter(i => i.id !== itemSelect);
+                // }
                 
                 // 记录出库操作
                 window.localData.records.push({
@@ -1368,9 +1443,15 @@
         
         // 保存编辑的库存
         window.saveEditStock = function() {
+            const name = document.getElementById('editItemName').value.trim();
             const quantity = parseInt(document.getElementById('editQuantity').value);
             const price = parseFloat(document.getElementById('editPrice').value); 
             
+            if (!name || name === '') {
+                window.showMessage('editStock', '请输入有效的物品名称', false);
+                return;
+            }
+
             if (isNaN(quantity) || quantity <= 0) {
                 window.showMessage('editStock', '请输入有效的库存数量', false);
                 return;
@@ -1396,7 +1477,7 @@
                     window.localData.records.push({
                         id: window.generateId(),
                         date: new Date().toISOString().split('T')[0],
-                        name: item.name,
+                        name: name,
                         type: '库存操作',
                         quantity: Math.abs(quantityDiff),
                         price: price,
