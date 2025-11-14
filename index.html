@@ -171,6 +171,56 @@
             font-size: 14px;
             width: auto;
         }
+
+        .total-stats {
+            display: flex;
+            /* 移除flex-wrap: wrap */
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #fafafa;
+            border-radius: 4px;
+            /* 确保不出现滚动条 */
+            overflow-x: hidden;
+            /* 防止内容溢出容器 */
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .total-stats-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 6px 8px;
+            margin: 0 2px;
+            text-align: center;
+            /* 使用flex: 1确保卡片自动填充容器空间 */
+            flex: 1;
+            /* 设置固定宽度比最小宽度更好地控制 */
+            width: 50%;
+            max-width: 50%;
+            box-sizing: border-box;
+        }
+
+        .total-stats-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1976d2;
+            margin-bottom: 2px;
+            /* 确保文本不换行 */
+            white-space: nowrap;
+            max-width: 100%;
+        }
+
+        .total-stats-label {
+            font-size: 18;
+            color: #666;
+            /* 确保标签也能适应小空间 */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
         
         .stats-container {
             display: flex;
@@ -419,14 +469,14 @@
         <!-- 当前库存 -->
         <div id="currentStock" class="tab-content active">
             <div class="message" id="currentStockMessage"></div>
-            <div class="stats-container">
-                <div class="stat-card">
-                    <div class="stat-value" id="totalItems">0</div>
-                    <div class="stat-label">库存物品总数:</div>
+            <div class="total-stats">
+                <div class="total-stats-card">
+                    <div class="total-stats-value" id="totalItems">0</div>
+                    <div class="total-stats-label">库存物品总数</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="totalValue">¥0.00</div>
-                    <div class="stat-label">库存总价值: ¥</div>
+                <div class="total-stats-card">
+                    <div class="total-stats-value" id="totalValue">¥0.00</div>
+                    <div class="total-stats-label">库存总价值</div>
                 </div>
             </div>
             <div class="form-group">
@@ -521,9 +571,9 @@
                     <thead>
                         <tr>
                             <th>名称</th>
-                            <th>类型</th>
                             <th>数量</th>
                             <th>单价</th>
+                            <th>类型</th>
                             <th>备注</th>
                             <th>操作时间</th>
                             <th>操作</th>
@@ -935,9 +985,9 @@
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${record.name}</td>
-                    <td>${record.type}</td>
                     <td>${record.quantity}</td>
                     <td>¥${record.price ? record.price.toFixed(2) : '0.00'}</td>
+                    <td>${record.type}</td>
                     <td>${record.remark || '-'}</td>
                     <td>${record.time}</td>
                     <td class="actions">
