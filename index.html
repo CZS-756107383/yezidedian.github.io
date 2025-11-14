@@ -63,10 +63,50 @@
             padding: 15px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
+            /* 添加以下属性实现横向滚动 */
+            overflow-x: auto;
+            white-space: nowrap;
+            /* 确保内容不会被裁剪 */
+            min-width: 100%;
+            box-sizing: border-box;
         }
-        
+
         .tab-content.active {
             display: block;
+        }
+
+        /* 优化滚动条样式 */
+        .tab-content::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .tab-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .tab-content::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+
+        .tab-content::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* 为移动设备优化触摸体验 */
+        @media (max-width: 768px) {
+            .tab-content {
+                padding: 10px;
+                -webkit-overflow-scrolling: touch; /* 启用平滑滚动 */
+            }
+            
+            /* 确保内部元素在需要时能够正确换行 */
+            .tab-content > * {
+                white-space: normal;
+                display: inline-block;
+                min-width: 100%;
+            }
         }
         
         .form-group {
@@ -1059,6 +1099,7 @@
             
             // 重置表单
             document.getElementById('sellQuantity').value = '';
+            document.getElementById('originalPrice').value = '';
             document.getElementById('sellPrice').value = '';
             
             // 显示成功消息
