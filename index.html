@@ -1343,9 +1343,9 @@
                 const originalPrice = record.originalPrice || 0;
                 const sellPrice = record.sellPrice || 0;
                 const quantity = record.quantity || 0;
-                totalOriginalPrice += originalPrice * quantity;
-                totalSales += sellPrice * quantity;
-                totalProfit += (sellPrice - originalPrice) * quantity;
+                totalOriginalPrice += originalPrice;
+                totalSales += sellPrice;
+                totalProfit += sellPrice - originalPrice;
             });
             
             document.getElementById('totalQuantity').textContent = totalQuantity;
@@ -1585,12 +1585,12 @@
                 return;
             }
 
-            if (isNaN(quantity) || quantity <= 0) {
+            if (isNaN(quantity)) {
                 window.showMessage('editStock', '请输入有效的库存数量', false);
                 return;
             }
 
-            if (isNaN(price) || price < 0) {
+            if (isNaN(price)) {
                 window.showMessage('editStock', '请输入有效的价格', false);
                 return;
             }
@@ -1650,12 +1650,12 @@
             const originalPrice = parseFloat(document.getElementById('editSellOriginalPrice').value);
             const sellPrice = parseFloat(document.getElementById('editSellPrice').value);
 
-            if (isNaN(originalPrice) || originalPrice <= 0) {
+            if (isNaN(originalPrice)) {
                 window.showMessage('editSell', '请输入有效的原价', false);
                 return;
             }
 
-            if (isNaN(sellPrice) || editSell < 0) {
+            if (isNaN(sellPrice)) {
                 window.showMessage('editStock', '请输入有效的售价', false);
                 return;
             }
