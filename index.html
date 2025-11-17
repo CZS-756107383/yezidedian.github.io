@@ -445,6 +445,25 @@
             overflow-x: auto;
             width: 100%;
         }
+
+        .text {
+            margin-bottom: 5px;
+        }
+        
+        /* 为链接添加样式，使其更易识别 */
+        .text a {
+            color: #1976d2;
+            text-decoration: none;
+        }
+        
+        .text a:hover {
+            text-decoration: underline;
+        }
+
+        .desc_text {
+            font-size: 18;
+            color: #ff0000;
+        }
         
     </style>
 </head>
@@ -683,6 +702,13 @@
                 <div class="help-text" style="font-size: 12px; color: #666; margin-top: 5px;">提示：在微信中打开时，可以从聊天记录中选择JSON文件</div>
             </div>
             <button onclick="window.importData()" class="btn-success">导入数据</button>
+
+            <h3 style="margin-top: 30px;">代码位置</h3>
+            <div class="form-group"> 
+                <div class="text"><a href="https://github.com/" target="_blank">https://github.com/</a></div> 
+                <div class="text">账号：CZS-756107383</div> 
+                <div class="desc_text">说明：网页免费托管相关代码存放仓库</div> 
+            </div>
         </div>
     </div>
     
@@ -1285,6 +1311,7 @@
             window.updateAllTabs();
             
             // 重置表单
+            document.getElementById('sellItemName').value = '';
             document.getElementById('sellQuantity').value = 1;
             document.getElementById('sellOriginalPrice').value = 0;
             document.getElementById('sellPrice').value = '';
